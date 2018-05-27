@@ -1,0 +1,19 @@
+{
+  "name": "arrp",
+  "version": "0.1.0",
+  "description": "a LISP like language on JavaScript",
+  "main": "arrp.js",
+  "scripts": {
+    "test": "node ./test/test.js"
+  },
+  "keywords": [
+    "LISP"
+  ],
+  "author": "myaosato",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/cli": "^7.0.0-beta.47",
+    "@babel/core": "^7.0.0-beta.47",
+    "babel-preset-env": "^1.7.0"
+  }
+}
