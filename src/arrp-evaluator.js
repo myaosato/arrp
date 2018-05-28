@@ -45,7 +45,7 @@ const arrpEval = (sexp) => {
 const evalFromStack = (sexps) => {
   let tmp = undefined; // TODO
   while (true) {
-    let sexp = sexps.pop();
+    let sexp = sexps.dequeue();
     if (sexp === undefined) break;
     tmp = arrpEval(sexp);
   }

@@ -70,6 +70,22 @@ console.log(readEval(`x`));
 console.log(readEval(`(quote x)`));
 console.log(readEval(`(if true (* 1 2 3) (/ 1 2 3)`));
 console.log(readEval(`(if false (+ 1 2 3) (- 1 2 3)`));
+console.log(readEval(`
+(defun id (sexp)
+  sexp)
+`));
+console.log(readEval(`
+(id 1)
+`));
+
+console.log(readEval(`
+(defun fact (num)
+  (if (<= num 1)
+      1
+      (* num (fact (- num 1)))))
+(fact 10)
+`));
+
 console.log('Start Arrp test');
 testCase('parse integer [42]', () => readEval('42'), 42);
 testCase('parse integer [0o52]', () => readEval('0o52'), 42);

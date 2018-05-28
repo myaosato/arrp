@@ -5,8 +5,8 @@ class ArrpSexpStack {
     this.stack = sexps;
   }
 
-  pop() {
-    return this.stack.pop();
+  dequeue() {
+    return this.stack.shift();
   }
 }
 
