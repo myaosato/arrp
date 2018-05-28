@@ -55,6 +55,7 @@ const ae = new ArrpEval(env);
 const readEval = (str) => ae.evalFromStack((read(str)));
 //printFull(read('((lambda (x) (list x (list (quote quote) x))) (quote (lambda (x) (list x (list (quote quote) x))))'));
 //printFull(read('(+ 1 2 3 4 5 6 7 8 9 10)'));
+console.log(read(`"()"`));
 console.log(read(`(hoge) (hoge)`));
 
 console.log(readEval('(- 42)'));

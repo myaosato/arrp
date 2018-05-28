@@ -20,17 +20,11 @@ const prompt = 'ARRP> ';
 let readStack = [];
 
 reader.on('line', function(line) {
-  let eol = readStack.indexOf('\n');
-  if (eol !== false) {
-    readStack.push(line.slice(0, eol));
-    console.log(readEval(readStack.join('')));
-    readStack = [];
-    readStack.push(line.slice(eol + 1));
-    reader.setPrompt(prompt, prompt.length);
-    reader.prompt();
-  } else {
-    readStack.push(line);
-  }
+  readStack.push(line);
+  console.log(readEval(readStack.join('')));
+  readStack = [];
+  reader.setPrompt(prompt, prompt.length);
+  reader.prompt();
 });
 
 reader.on('close', function() {

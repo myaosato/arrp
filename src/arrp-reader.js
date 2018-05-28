@@ -26,7 +26,7 @@ const resolveLiteral = (str) => {
 }
 
 
-const stackChar = (input, pos, str_mode) => {
+const makeToken = (input, pos) => {
   let stack = [];
   while (true) {
     stack.push(input[pos]);
@@ -35,26 +35,43 @@ const stackChar = (input, pos, str_mode) => {
       stack.push(input[pos]);
     }
     pos++;
-    if (input[pos] === '"' && str_mode === true) {
-      stack.push(input[pos]);
-      pos++;
-      return [resolveLiteral(stack.join('')), pos, true];
-    }
     if (input[pos] === undefined
       || input[pos] === '('
       || input[pos] === ')'
-      || (input[pos].match(/^\s/) && str_mode === false)) {
+      || input[pos].match(/^\s/)) {
      return [resolveLiteral(stack.join('')), pos, true];
     }
   }
 };
+
+const makeString = (input, pos) => {
+  let stack = [];
+  while (true) {
+    stack.push(input[pos]);
+    if (input[pos] === '\\') {
+      pos++;
+      stack.push(input[pos]);
+    }
+    pos++;
+    if (input[pos] === '"') {
+      stack.push(input[pos]);
+      pos++;
+      return [resolveLiteral(stack.join('')), pos, true];
+    }
+    if (pos >= input.length) {
+      throw Error(input + ": " + pos);
+    }
+  }
+};
+
 
 const getToken = (input, pos) => {
   if (input[pos] === undefined) return [null, false, null];
   if (input[pos] === '(') return ['(', pos + 1, '('];
   if (input[pos] === ')') return [')', pos + 1, ')'];
   if (input[pos].match(/^\s/)) return [' ', pos + 1, null];
-  return stackChar(input, pos, input[pos] === '"');
+  if (input[pos] === '"') return makeString(input, pos);
+  return makeToken(input, pos);
 };
 
 const parse = (input) => {
