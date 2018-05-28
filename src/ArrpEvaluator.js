@@ -3,6 +3,7 @@ const ArrpSymbol = require(__dirname + '/ArrpSymbol.js');
 const ArrpFunction = require(__dirname + '/ArrpFunction.js');
 const ArrpMacro = require(__dirname + '/ArrpMacro.js');
 const ArrpSpecial = require(__dirname + '/ArrpSpecial.js');
+const ArrpMultipleValue = require(__dirname + '/ArrpMultipleValue.js');
 
 class ArrpEvaluator{
   constructor(env) {
@@ -22,7 +23,17 @@ class ArrpEvaluator{
     return null; // TODO Error
   }
 
-  eval(sexp) {
+  eval(sexp, multipleMode = false) {
+    let val = this.__eval(sexp);
+    if (multipleMode) {
+      return val;
+    } else {
+      if (val instanceof ArrpMultipleValue) return val.top();
+      return val;
+    }
+  }
+
+  __eval(sexp) {
     if (typeof sexp === 'string' || typeof sexp === 'number') {
       return sexp;
     } else if (sexp === undefined || sexp === null) {
@@ -43,13 +54,13 @@ class ArrpEvaluator{
     return sexp;
   }
 
-  evalFromStack(sexps) {
+  evalFromStack(sexps, multiple) {
     if (sexps.stack.length === 0) return '#<No Input>'; //TODO
     let tmp = undefined; // TODO
     while (true) {
       let sexp = sexps.dequeue();
       if (sexp === undefined) break;
-      tmp = this.eval(sexp);
+      tmp = this.eval(sexp, multiple);
     }
     return tmp;
   }

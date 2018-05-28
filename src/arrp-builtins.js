@@ -4,6 +4,7 @@ const ArrpSymbol = require(__dirname + '/ArrpSymbol.js');
 const ArrpMacro = require(__dirname + '/ArrpMacro.js');
 const ArrpFunction = require(__dirname + '/ArrpFunction.js');
 const ArrpSpecial = require(__dirname + '/ArrpSpecial.js');
+const ArrpMultipleValue = require(__dirname + '/ArrpMultipleValue.js');
 
 const builtins = new Map();
 builtins.set('quote', new ArrpSpecial((evaluator, val) =>　{
@@ -73,7 +74,7 @@ builtins.set('+', (...numbers) =>　numbers.reduce((prev, curr) => prev + curr))
 builtins.set('-', (top, ...numbers) => numbers.length === 0? - top: top - numbers.reduce((prev, curr) => prev + curr));
 builtins.set('*', (...numbers) =>　numbers.reduce((prev, curr) => prev * curr));
 builtins.set('/', (top, ...numbers) => numbers.length === 0? 1 / top: top / numbers.reduce((prev, curr) => prev * curr));
-
+builtins.set('rem', (num1, num2) => new ArrpMultipleValue(Math.floor(num1 / num2), num1 % num2));
 
 // EXPORTS
 module.exports = builtins;

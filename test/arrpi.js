@@ -20,7 +20,7 @@ const wait = '..... ';
 reader.on('line', function(line) {
   let stackOrNull = ar.read(line);
   if (stackOrNull) {
-    console.log(ae.evalFromStack(stackOrNull));
+    console.log(ae.evalFromStack(stackOrNull, true));
     reader.setPrompt(prompt, prompt.length);
   } else {
     reader.setPrompt(wait, wait.length);
