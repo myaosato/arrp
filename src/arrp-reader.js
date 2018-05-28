@@ -37,6 +37,7 @@ const stackChar = (input, pos, str_mode) => {
     pos++;
     if (input[pos] === '"' && str_mode === true) {
       stack.push(input[pos]);
+      pos++;
       return [resolveLiteral(stack.join('')), pos, true];
     }
     if (input[pos] === undefined
