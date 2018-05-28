@@ -4,7 +4,8 @@
   "description": "a LISP like language on JavaScript",
   "main": "arrp.js",
   "scripts": {
-    "test": "node ./test/test.js"
+    "test": "node ./test/test.js",
+    "arrpi": "node ./test/arrpi.js"
   },
   "keywords": [
     "LISP"
