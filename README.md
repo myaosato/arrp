@@ -15,7 +15,10 @@ $ npm arrpi
 
 ARRP > (+ 1 2 3)
 6
-ARRP > (defun fact (num) (if (<= num 1) 1 (* num (fact (- num 1)))))
+ARRP > (defun fact (num)
+.... >    (if (<= num 1)
+.... >        1
+.... >        (* num (fact (- num 1)))))
 ArrpFunction {
   env: Map {},
   params: [ Symbol#<num> ],
@@ -30,7 +33,7 @@ ARRP> (exit)
 
 Bye
 
-$ 
+$
 ```
 
 ## License

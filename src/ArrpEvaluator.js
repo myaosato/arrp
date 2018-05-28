@@ -44,6 +44,7 @@ class ArrpEvaluator{
   }
 
   evalFromStack(sexps) {
+    if (sexps.stack.length === 0) return '#<No Input>'; //TODO
     let tmp = undefined; // TODO
     while (true) {
       let sexp = sexps.dequeue();

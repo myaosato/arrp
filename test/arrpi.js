@@ -1,12 +1,11 @@
-const read = require(__dirname + '/../src/arrp-reader.js');
+const ArrpEnvironment = require(__dirname + '/../src/ArrpEnvironment.js');
+const ArrpEval = require(__dirname + '/../src/ArrpEvaluator.js');
+const ArrpReader = require(__dirname + '/../src/arrp-reader.js');
 
 const builtins = require(__dirname + '/../src/arrp-builtins.js');
-const ArrpEnvironment = require(__dirname + '/../src/ArrpEnvironment.js');
-const env = new ArrpEnvironment(builtins);
 
-const ArrpEval = require(__dirname + '/../src/ArrpEvaluator.js');
-const ae = new ArrpEval(env);
-const readEval = (str) => ae.evalFromStack((read(str)));
+const ar = new ArrpReader();
+const ae = new ArrpEval(new ArrpEnvironment(builtins));
 
 const reader = require('readline').createInterface({
   input: process.stdin,
@@ -16,15 +15,17 @@ const reader = require('readline').createInterface({
 ae.env.setGlobal({str:'exit'}, () => {reader.close();process.exit();});
 
 const prompt = 'ARRP> ';
-
-let readStack = [];
+const wait = '..... ';
 
 reader.on('line', function(line) {
-  readStack.push(line);
-  console.log(readEval(readStack.join('')));
-  readStack = [];
-  reader.setPrompt(prompt, prompt.length);
-  reader.prompt();
+  let stackOrNull = ar.read(line);
+  if (stackOrNull) {
+    console.log(ae.evalFromStack(stackOrNull));
+    reader.setPrompt(prompt, prompt.length);
+  } else {
+    reader.setPrompt(wait, wait.length);
+  }
+    reader.prompt();
 });
 
 reader.on('close', function() {

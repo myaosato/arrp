@@ -44,7 +44,9 @@ const runTests = () => {
 
 
 console.log('Load Arrp and playground');
-const read = require(__dirname + '/../src/arrp-reader.js');
+const ArrpReader = require(__dirname + '/../src/arrp-reader.js');
+const ar = new ArrpReader();
+const read = (str) => ar.read(str);
 
 const builtins = require(__dirname + '/../src/arrp-builtins.js');
 const ArrpEnvironment = require(__dirname + '/../src/ArrpEnvironment.js');
