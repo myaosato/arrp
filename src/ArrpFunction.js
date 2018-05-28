@@ -15,11 +15,11 @@ class ArrpFunction {
       });
     }
 
-    call(env, arrpEval, args) {
-      env.enter(this.env);
-      this.bind(env, args);
-      let result = arrpEval(this.body);
-      env.exit();
+    call(evaluator, args) {
+      evaluator.env.enter(this.env);
+      this.bind(evaluator.env, args);
+      let result = evaluator.eval(this.body);
+      evaluator.env.exit();
       return result;
     }
 }

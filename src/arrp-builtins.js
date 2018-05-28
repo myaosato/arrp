@@ -6,36 +6,36 @@ const ArrpFunction = require(__dirname + '/ArrpFunction.js');
 const ArrpSpecial = require(__dirname + '/ArrpSpecial.js');
 
 const builtins = new Map();
-builtins.set('quote', new ArrpSpecial((env, arrpEval, val) =>　{
+builtins.set('quote', new ArrpSpecial((evaluator, val) =>　{
   return val;
 }));
 
-builtins.set('if', new ArrpSpecial((env, arrpEval, cond, thenSexp, elseSexp) =>　{
-  return arrpEval(cond) !== false? arrpEval(thenSexp): arrpEval(elseSexp);
+builtins.set('if', new ArrpSpecial((evaluator, cond, thenSexp, elseSexp) =>　{
+  return evaluator.eval(cond) !== false? evaluator.eval(thenSexp): evaluator.eval(elseSexp);
 }));
 
-builtins.set('lambda', new ArrpSpecial((env, arrpEval, params, ...body) =>　{
-  return new ArrpFunction(env, params, body);
+builtins.set('lambda', new ArrpSpecial((evaluator, params, ...body) =>　{
+  return new ArrpFunction(evaluator.env, params, body);
 }));
 
-builtins.set('progn', new ArrpSpecial((env, arrpEval, ...body) =>　{
+builtins.set('progn', new ArrpSpecial((evaluator, ...body) =>　{
     let tmp = null;
     body.forEach((sexp) => {
-      tmp = arrpEval(sexp);
+      tmp = evaluator.eval(sexp);
     });
     return tmp;
 }));
 
-builtins.set('set!', new ArrpSpecial((env, arrpEval, sym, val) =>　{
-  return env.set(sym, arrpEval(val));
+builtins.set('set!', new ArrpSpecial((evaluator, sym, val) =>　{
+  return evaluator.env.set(sym, evaluator.eval(val));
 }));
 
-builtins.set('setg!', new ArrpSpecial((env, arrpEval, sym, val) =>　{
-  return env.setGlobal(sym, arrpEval(val));
+builtins.set('setg!', new ArrpSpecial((evaluator, sym, val) =>　{
+  return evaluator.env.setGlobal(sym, evaluator.eval(val));
 }));
 
-builtins.set('defun', new ArrpSpecial((env, arrpEval, sym, params, ...body) =>　{
-  return env.setGlobal(sym, new ArrpFunction(env, params, body));
+builtins.set('defun', new ArrpSpecial((evaluator, sym, params, ...body) =>　{
+  return evaluator.env.setGlobal(sym, new ArrpFunction(evaluator.env, params, body));
 }));
 
 

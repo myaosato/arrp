@@ -4,9 +4,8 @@ class ArrpSpecial {
     this.callable = callable;
   }
 
-  call (env, arrpEval, args) {
-    args.unshift(arrpEval);
-    args.unshift(env);
+  call (evaluator, args) {
+    args.unshift(evaluator);
     return this.callable.apply(null, args);
   }
 

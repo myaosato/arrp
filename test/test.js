@@ -45,8 +45,14 @@ const runTests = () => {
 
 console.log('Load Arrp and playground');
 const read = require(__dirname + '/../src/arrp-reader.js');
-const arrpEvals = require(__dirname + '/../src/arrp-evaluator.js');
-const readEval = (str) => arrpEvals.evalFromStack((read(str)));
+
+const builtins = require(__dirname + '/../src/arrp-builtins.js');
+const ArrpEnvironment = require(__dirname + '/../src/ArrpEnvironment.js');
+const env = new ArrpEnvironment(builtins);
+
+const ArrpEval = require(__dirname + '/../src/ArrpEvaluator.js');
+const ae = new ArrpEval(env);
+const readEval = (str) => ae.evalFromStack((read(str)));
 //printFull(read('((lambda (x) (list x (list (quote quote) x))) (quote (lambda (x) (list x (list (quote quote) x))))'));
 //printFull(read('(+ 1 2 3 4 5 6 7 8 9 10)'));
 console.log(read(`(hoge) (hoge)`));
@@ -68,8 +74,8 @@ console.log(readEval(`(hoge)`));
 console.log(readEval(`x`));
 console.log(readEval(`x`));
 console.log(readEval(`(quote x)`));
-console.log(readEval(`(if true (* 1 2 3) (/ 1 2 3)`));
-console.log(readEval(`(if false (+ 1 2 3) (- 1 2 3)`));
+console.log(readEval(`(if true (* 1 2 3) (/ 1 2 3))`));
+console.log(readEval(`(if false (+ 1 2 3) (- 1 2 3))`));
 console.log(readEval(`
 (defun id (sexp)
   sexp)
@@ -77,12 +83,12 @@ console.log(readEval(`
 console.log(readEval(`
 (id 1)
 `));
-
 console.log(readEval(`
 (defun fact (num)
   (if (<= num 1)
       1
-      (* num (fact (- num 1)))))
+      (* num (fact (- num 1)))))`));
+console.log(readEval(`
 (fact 10)
 `));
 
