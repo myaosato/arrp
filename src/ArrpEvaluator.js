@@ -10,30 +10,25 @@ class ArrpEvaluator{
       this.env = env;
   }
 
+  __getSingleValue(val){
+    if (val instanceof ArrpMultipleValue) return val.top();
+    return val;
+  }
+
   call(op, args) {
     if (op instanceof Function) {
-      return op.apply(null, args.map((arg) => this.eval(arg)));
+      return op.apply(null, args.map((arg) => this.__getSingleValue(this.eval(arg))));
     } else if (op instanceof ArrpSpecial) {
       return op.call(this, args);
     } else if (op instanceof ArrpFunction) {
-      return op.call(this, args.map((arg) => this.eval(arg)));
+      return op.call(this, args.map((arg) => this.__getSingleValue(this.eval(arg))));
     } else if (op instanceof ArrpMacro) {
       return; // TODO WIP
     }
     return null; // TODO Error
   }
 
-  eval(sexp, multipleMode = false) {
-    let val = this.__eval(sexp);
-    if (multipleMode) {
-      return val;
-    } else {
-      if (val instanceof ArrpMultipleValue) return val.top();
-      return val;
-    }
-  }
-
-  __eval(sexp) {
+  eval(sexp) {
     if (typeof sexp === 'string' || typeof sexp === 'number') {
       return sexp;
     } else if (sexp === undefined || sexp === null) {
