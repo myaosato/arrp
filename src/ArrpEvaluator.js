@@ -23,7 +23,7 @@ class ArrpEvaluator{
     } else if (op instanceof ArrpFunction) {
       return op.call(this, args.map((arg) => this.__getSingleValue(this.eval(arg))));
     } else if (op instanceof ArrpMacro) {
-      return; // TODO WIP
+      return this.eval(op.expand(this, args));
     }
     return null; // TODO Error
   }

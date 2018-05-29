@@ -19,6 +19,10 @@ builtins.set('lambda', new ArrpSpecial((evaluator, params, ...body) =>　{
   return new ArrpFunction(evaluator.env, params, body);
 }));
 
+builtins.set('defmacro', new ArrpSpecial((evaluator, sym, params, ...body) =>　{
+  return evaluator.env.setGlobal(sym, new ArrpMacro(evaluator.env, params, body));
+}));
+
 builtins.set('progn', new ArrpSpecial((evaluator, ...body) =>　{
     let tmp = null;
     body.forEach((sexp) => {
@@ -28,7 +32,10 @@ builtins.set('progn', new ArrpSpecial((evaluator, ...body) =>　{
 }));
 
 builtins.set('set!', new ArrpSpecial((evaluator, sym, val) =>　{
-  return evaluator.env.set(sym, evaluator.eval(val));
+  if (sym instanceof ArrpSymbol) {
+    return evaluator.env.set(sym, evaluator.eval(val));
+  }
+  return undefined; // TODO
 }));
 
 builtins.set('setg!', new ArrpSpecial((evaluator, sym, val) =>　{
@@ -42,12 +49,35 @@ builtins.set('defun', new ArrpSpecial((evaluator, sym, params, ...body) =>　{
 
 // Array
 builtins.set('arrayp', (val) =>　{
-  return val instanceof Array ;
+  return val instanceof Array;
+});
+
+builtins.set('array', (...vals) =>　{
+  return Array.from(vals);
 });
 
 builtins.set('nth', (arr, ind) =>　{
-  return arr[ind] ;
+  return arr[ind];
 });
+
+builtins.set('replace-nth', (arr, ind, val) =>　{
+  arr[ind] = val;
+  return val;
+});
+
+builtins.set('first', (arr) =>　{
+  return arr[0];
+});
+
+builtins.set('rest', (arr) =>　{
+  return arr.slice(1);
+});
+
+builtins.set('concat', (arr, ...arrs) =>　{
+  return arr.concat.apply(arr, arrs);
+});
+
+
 
 // Logical
 builtins.set('not', (arg) => arg === false? true: false);
