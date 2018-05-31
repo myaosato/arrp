@@ -58,6 +58,14 @@ builtins.set('gensym', new ArrpSpecial((evaluator) =>　{
   return ArrpSymbol.make(Symbol(randomNumeal(6)));
 }));
 
+builtins.set('let', new ArrpSpecial((evaluator, params, ...body) =>　{
+  let vars = params.map((sexp) => sexp instanceof ArrpSymbol? sexp: sexp[0]);
+  let vals = params.map((sexp) => sexp instanceof ArrpSymbol? null: evaluator.eval(sexp[1]));
+
+  return (new ArrpFunction(evaluator.env, vars, body)).call(evaluator, vals);
+}));
+
+
 // Eval
 builtins.set('eval', new ArrpSpecial((evaluator, sexp) =>　{
   return evaluator.eval(evaluator.eval(sexp));
