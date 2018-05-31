@@ -46,6 +46,23 @@ builtins.set('defun', new ArrpSpecial((evaluator, sym, params, ...body) =>　{
   return evaluator.env.setGlobal(sym, new ArrpFunction(evaluator.env, params, body));
 }));
 
+const randomNumeal = (digit) => {
+  let ret = '';
+  for (let c = 0; c < digit; c++){
+    ret += Math.ceil(Math.random() * 10);
+  }
+  return ret;
+}
+
+builtins.set('gensym', new ArrpSpecial((evaluator) =>　{
+  return ArrpSymbol.make(Symbol(randomNumeal(6)));
+}));
+
+// Eval
+builtins.set('eval', new ArrpSpecial((evaluator, sexp) =>　{
+  return evaluator.eval(evaluator.eval(sexp));
+}));
+
 
 // Array
 builtins.set('arrayp', (val) =>　{

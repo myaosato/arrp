@@ -1,19 +1,20 @@
 'use strict';
 
 class ArrpSymbol {
-  constructor(str) {
-    this.str = str;
+  constructor(identifier) {
+    this.identifier = identifier;
   }
 
   toString() {
-    return `Symbol#<${this.str}>`;
+    if (typeof this.identifier === 'symbol') return '#<gensym-' + this.identifier.toString().slice(7, -1) + '>';
+    return `${this.identifier}`;
   }
   inspect() {
     return this.toString();
   }
 
   eq(sym) {
-    return this.str === sym.str;
+    return this.identifier === sym.identifier;
   }
 
   static make(str) {
