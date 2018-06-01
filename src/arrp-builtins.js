@@ -1,5 +1,7 @@
 'use strict';
 const ArrpSymbol = require(__dirname + '/ArrpSymbol.js');
+const ArrpComma = require(__dirname + '/ArrpComma.js');
+const ArrpReader = require(__dirname + '/ArrpReader.js');
 
 const ArrpMacro = require(__dirname + '/ArrpMacro.js');
 const ArrpFunction = require(__dirname + '/ArrpFunction.js');
@@ -63,6 +65,13 @@ builtins.set('let', new ArrpSpecial((evaluator, params, ...body) =>　{
   let vals = params.map((sexp) => sexp instanceof ArrpSymbol? null: evaluator.eval(sexp[1]));
 
   return (new ArrpFunction(evaluator.env, vars, body)).call(evaluator, vals);
+}));
+
+
+// Read
+builtins.set('read', new ArrpSpecial((evaluator, str) =>　{
+  let stackOrNull = (new ArrpReader()).read(str, true);
+  return stackOrNull? stackOrNull.dequeue(): null;
 }));
 
 

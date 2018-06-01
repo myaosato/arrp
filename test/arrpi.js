@@ -1,6 +1,7 @@
 const ArrpEnvironment = require(__dirname + '/../src/ArrpEnvironment.js');
+const ArrpSymbol = require(__dirname + '/../src/ArrpSymbol.js');
 const ArrpEval = require(__dirname + '/../src/ArrpEvaluator.js');
-const ArrpReader = require(__dirname + '/../src/arrp-reader.js');
+const ArrpReader = require(__dirname + '/../src/ArrpReader.js');
 
 const builtins = require(__dirname + '/../src/arrp-builtins.js');
 
@@ -12,7 +13,7 @@ const reader = require('readline').createInterface({
   output: process.stdout
 });
 
-ae.env.setGlobal({str:'exit'}, () => {reader.close();process.exit();});
+ae.env.setGlobal(ArrpSymbol.make('exit'), () => {reader.close();process.exit();});
 
 const prompt = 'ARRP> ';
 const wait = '..... ';

@@ -44,7 +44,7 @@ const runTests = () => {
 
 
 console.log('Load Arrp and playground');
-const ArrpReader = require(__dirname + '/../src/arrp-reader.js');
+const ArrpReader = require(__dirname + '/../src/ArrpReader.js');
 const ar = new ArrpReader();
 const read = (str) => ar.read(str);
 
@@ -58,6 +58,7 @@ const readEval = (str) => ae.evalFromStack((read(str)));
 //printFull(read('((lambda (x) (list x (list (quote quote) x))) (quote (lambda (x) (list x (list (quote quote) x))))'));
 //printFull(read('(+ 1 2 3 4 5 6 7 8 9 10)'));
 console.log(read(`"()"`));
+console.log(read(`(a,b,c)`));
 console.log(read(`(hoge) (hoge)`));
 
 console.log(readEval('(- 42)'));
