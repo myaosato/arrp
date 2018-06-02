@@ -17,7 +17,7 @@ $ npm install
 $ cd arrp
 $ npm run arrpi
 
-> arrp@0.1.0 arrpi /Users/noguchihiroki/Desktop/arrp-master
+> arrp@0.1.0 arrpi /arrp/parent/dir/path/arrp
 > node ./test/arrpi.js
 
 ARRP > (+ 1 2 3)
