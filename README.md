@@ -3,12 +3,19 @@ ARRP (Array Processing) is a LISP-like Programing Language on JavaScript.
 
 WIP
 
-## Trivial REPL
+## Installation
 
 ```
 $ git clone https://github.com/myaosato/arrp.git
 $ cd arrp
-$ npm arrpi
+$ npm install
+```
+
+## Trivial REPL
+
+```
+$ cd arrp
+$ npm run arrpi
 
 > arrp@0.1.0 arrpi /arrp/parent/dir/path/arrp
 > node ./test/arrpi.js
