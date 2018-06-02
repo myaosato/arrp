@@ -1,5 +1,6 @@
 'use strict';
 const ArrpSymbol = require(__dirname + '/ArrpSymbol.js');
+const ArrpComma = require(__dirname + '/ArrpComma.js');
 const ArrpFunction = require(__dirname + '/ArrpFunction.js');
 const ArrpMacro = require(__dirname + '/ArrpMacro.js');
 const ArrpSpecial = require(__dirname + '/ArrpSpecial.js');

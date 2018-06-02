@@ -21,7 +21,7 @@ class ArrpReader{
       } else if (quote === '`') {
         sexp = [ArrpSymbol.make('quasi-quote'), sexp];
       } else if (quote === ',') {
-        sexp = [ArrpComma.make(sexp)];
+        sexp = ArrpComma.make(sexp);
       }
       return this.__push(sexp)
     }

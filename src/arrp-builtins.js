@@ -14,7 +14,16 @@ builtins.set('quote', new ArrpSpecial((evaluator, val) =>　{
 }));
 
 builtins.set('quasi-quote', new ArrpSpecial((evaluator, val) =>　{
-  return val; // TODO
+  let expandQuasiQuote = (sexp) => {
+    if (sexp instanceof Array) {
+      return sexp.map((elt) => expandQuasiQuote(elt));
+    } else if (sexp instanceof ArrpComma) {
+      return evaluator.eval(sexp.sexp);
+    } else {
+      return sexp;
+    }
+  }
+  return expandQuasiQuote(val);
 }));
 
 
