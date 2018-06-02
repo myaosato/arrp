@@ -5,6 +5,30 @@ const ArrpSymbol = require(__dirname + '/ArrpSymbol.js');
 class ArrpReader{
   constructor() {
     this.__stack = [[]];
+    this.__quote = [];
+  }
+
+  __setQuote(str) {
+    return this.__quote.push(ArrpSymbol.make(str));
+  }
+
+  __push(sexp) {
+    if (this.__quote.length > 0) {
+      let quoteSym = this.__quote.pop();
+      return this.__stack[this.__stack.length - 1].push([quoteSym, sexp]);
+    } else {
+      return this.__stack[this.__stack.length - 1].push(sexp);
+    }
+  }
+
+  __makeArray() {
+    let arr = [];
+    this.__push(arr);
+    return this.__stack.push(arr);
+  }
+
+  __pop() {
+    return this.__stack.pop();
   }
 
   __resolveLiteral(str) {
@@ -38,7 +62,7 @@ class ArrpReader{
         || input[pos] === '('
         || input[pos] === ')'
         || input[pos] === ';'
-        //|| input[pos] === ',' TODO
+        || input[pos] === "'"
         || input[pos].match(/^\s/)) {
        return [this.__resolveLiteral(stack.join('')), pos, true];
       }
@@ -87,7 +111,7 @@ class ArrpReader{
 
   __getToken(input, pos) {
     if (input[pos] === undefined) return [null, false, null];
-    //if (input[pos] === '\'') return ['\'', pos + 1, '\'']; TODO
+    if (input[pos] === "'") return ["'", pos + 1, "'"];
     if (input[pos] === '(') return ['(', pos + 1, '('];
     if (input[pos] === ')') return [')', pos + 1, ')'];
     if (input[pos].match(/^\s/)) return ['', pos + 1, null];
@@ -102,30 +126,32 @@ class ArrpReader{
     let chk;
     let token = null;
     while (true) {
-      if (readOne && this.__stack.length === 1) return new ArrpSexpStack(this.__stack[0], pos);
       [token, pos, chk] = this.__getToken(input, pos);
+      if (token === "'") {
+        this.__setQuote('quote');
+        continue;
+      }
       if (pos === false) break;
       if (chk === null) continue;
       if (token === '(') {
-        let arr = [];
-        this.__stack[this.__stack.length - 1].push(arr);
-        this.__stack.push(arr);
+        this.__makeArray();
         continue;
       }
       if (token === ')') {
-        this.__stack.pop();
+        this.__pop();
         continue;
       }
-      this.__stack[this.__stack.length - 1].push(token);
+      this.__push(token);
     }
     if (this.__stack.length > 1) return null; // TODO
     if (this.__stack.length === 0) throw new Error(); // TODO
+    if (readOne && this.__stack.length === 1) return new ArrpSexpStack(this.__stack[0]);
     return new ArrpSexpStack(this.__stack[0]);
   };
 
   read(str, readOne = false) {
     let stack = this.__parse(str, readOne);
-    if (stack !== null) this.__stack === [[]];
+    if (stack !== null) this.__stack = [[]];
     return stack;
   };
 }

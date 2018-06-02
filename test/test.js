@@ -44,6 +44,7 @@ const runTests = () => {
 
 
 console.log('Load Arrp and playground');
+const ArrpSymbol = require(__dirname + '/../src/ArrpSymbol.js');
 const ArrpReader = require(__dirname + '/../src/ArrpReader.js');
 const ar = new ArrpReader();
 const read = (str) => ar.read(str);
@@ -57,44 +58,16 @@ const ae = new ArrpEval(env);
 const readEval = (str) => ae.evalFromStack((read(str)));
 //printFull(read('((lambda (x) (list x (list (quote quote) x))) (quote (lambda (x) (list x (list (quote quote) x))))'));
 //printFull(read('(+ 1 2 3 4 5 6 7 8 9 10)'));
-console.log(read(`"()"`));
-console.log(read(`(a,b,c)`));
-console.log(read(`(hoge) (hoge)`));
+let a = read(`'(+ 1 1)`).dequeue();
+let b = read(`(quote (+ 1 1))`).dequeue();
+console.log(a[0].identifier === b[0].identifier);
 
-console.log(readEval('(- 42)'));
-console.log(readEval('(/ 42)'));
-console.log(readEval('(progn (+ 1 1) (- 1 1))'));
-console.log(readEval('(progn (- 1 1) (+ 1 1))'));
-console.log(readEval('((lambda (x) (- 1 1) (+ 1 1)) 0)'));
-console.log(readEval('(set! x 4)'));
-console.log(readEval(`(set! hoge
-                                ((lambda (x)
-                                    (lambda () (set x (+ x 1))))
-                                   0)
-                                 )`));
-console.log(readEval(`(hoge)`));
-console.log(readEval(`(hoge)`));
-console.log(readEval(`(hoge)`));
-console.log(readEval(`x`));
-console.log(readEval(`x`));
-console.log(readEval(`(quote x)`));
-console.log(readEval(`(if true (* 1 2 3) (/ 1 2 3))`));
-console.log(readEval(`(if false (+ 1 2 3) (- 1 2 3))`));
-console.log(readEval(`
-(defun id (sexp)
-  sexp)
-`));
-console.log(readEval(`
-(id 1)
-`));
 console.log(readEval(`
 (defun fact (num)
   (if (<= num 1)
       1
       (* num (fact (- num 1)))))`));
-console.log(readEval(`
-(fact 10)
-`));
+console.log(readEval(`(fact 10)`));
 
 console.log('Start Arrp test');
 testCase('parse integer [42]', () => readEval('42'), 42);
