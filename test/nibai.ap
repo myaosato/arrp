@@ -1,0 +1,16 @@
+ ;; -*- coding:utf-8 mode:lisp -*-
+(let ((x 0))
+  (defun counter (num) 
+    (if num 
+        (set! x num) 
+        (set! x (+ x 1)))))
+(defmacro nibai (a)
+  (let ((b (gensym)))
+    `(let ((,b ,a))
+       (+ ,b ,b))))
+(defmacro tashizan (a)
+  `(+ ,a ,a))
+(counter 0)
+(tashizan (counter false))
+(counter 0)
+(nibai (counter false))
