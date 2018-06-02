@@ -1,6 +1,7 @@
 'use strict';
 const ArrpSexpStack = require(__dirname + '/ArrpSexpStack.js')
 const ArrpSymbol = require(__dirname + '/ArrpSymbol.js');
+const ArrpComma = require(__dirname + '/ArrpComma.js');
 
 class ArrpReader{
   constructor() {
@@ -9,16 +10,22 @@ class ArrpReader{
   }
 
   __setQuote(str) {
-    return this.__quote.push(ArrpSymbol.make(str));
+    return this.__quote.push(str);
   }
 
   __push(sexp) {
     if (this.__quote.length > 0) {
-      let quoteSym = this.__quote.pop();
-      return this.__stack[this.__stack.length - 1].push([quoteSym, sexp]);
-    } else {
-      return this.__stack[this.__stack.length - 1].push(sexp);
+      let quote = this.__quote.pop();
+      if (quote === "'") {
+        sexp = [ArrpSymbol.make('quote'), sexp];
+      } else if (quote === '`') {
+        sexp = [ArrpSymbol.make('quasi-quote'), sexp];
+      } else if (quote === ',') {
+        sexp = [ArrpComma.make(sexp)];
+      }
+      return this.__push(sexp)
     }
+    return this.__stack[this.__stack.length - 1].push(sexp);
   }
 
   __makeArray() {
@@ -63,6 +70,8 @@ class ArrpReader{
         || input[pos] === ')'
         || input[pos] === ';'
         || input[pos] === "'"
+        || input[pos] === '`'
+        || input[pos] === ','
         || input[pos].match(/^\s/)) {
        return [this.__resolveLiteral(stack.join('')), pos, true];
       }
@@ -103,15 +112,11 @@ class ArrpReader{
     }
   }
 
-  __Comma(input, pos) {
-    // TODO
-    let stack = (new ArrpReader()).read(input.slice(pos + 1), true); // TODO
-    new ArrpComma(sexp)
-  }
-
   __getToken(input, pos) {
     if (input[pos] === undefined) return [null, false, null];
     if (input[pos] === "'") return ["'", pos + 1, "'"];
+    if (input[pos] === '`') return ['`', pos + 1, '`'];
+    if (input[pos] === ',') return [',', pos + 1, `,`];
     if (input[pos] === '(') return ['(', pos + 1, '('];
     if (input[pos] === ')') return [')', pos + 1, ')'];
     if (input[pos].match(/^\s/)) return ['', pos + 1, null];
@@ -127,8 +132,11 @@ class ArrpReader{
     let token = null;
     while (true) {
       [token, pos, chk] = this.__getToken(input, pos);
-      if (token === "'") {
-        this.__setQuote('quote');
+      if (token === "'"
+        || token === '`'
+        || token === `,`
+      ) {
+        this.__setQuote(token);
         continue;
       }
       if (pos === false) break;

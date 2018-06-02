@@ -13,6 +13,12 @@ builtins.set('quote', new ArrpSpecial((evaluator, val) =>　{
   return val;
 }));
 
+builtins.set('quasi-quote', new ArrpSpecial((evaluator, val) =>　{
+  return val; // TODO
+}));
+
+
+
 builtins.set('if', new ArrpSpecial((evaluator, cond, thenSexp, elseSexp) =>　{
   return evaluator.eval(cond) !== false? evaluator.eval(thenSexp): evaluator.eval(elseSexp);
 }));
