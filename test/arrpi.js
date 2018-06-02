@@ -5,7 +5,7 @@ const ArrpReader = require(__dirname + '/../src/ArrpReader.js');
 
 const builtins = require(__dirname + '/../src/arrp-builtins.js');
 
-const ar = new ArrpReader();
+let ar = new ArrpReader();
 const ae = new ArrpEval(new ArrpEnvironment(builtins));
 
 const reader = require('readline').createInterface({
@@ -19,14 +19,20 @@ const prompt = 'ARRP> ';
 const wait = '..... ';
 
 reader.on('line', function(line) {
-  let stackOrNull = ar.read(line);
-  if (stackOrNull) {
-    console.log(ae.evalFromStack(stackOrNull, true));
-    reader.setPrompt(prompt, prompt.length);
-  } else {
-    reader.setPrompt(wait, wait.length);
+  try {
+    let stackOrNull = ar.read(line);
+    if (stackOrNull) {
+      console.log(ae.evalFromStack(stackOrNull, true));
+      reader.setPrompt(prompt, prompt.length);
+    } else {
+      reader.setPrompt(wait, wait.length);
+    }
+  } catch (error) {
+    console.log(error);
+    console.log('-- reset reader --');
+    ar = new ArrpReader();
   }
-    reader.prompt();
+  reader.prompt();
 });
 
 reader.on('close', function() {

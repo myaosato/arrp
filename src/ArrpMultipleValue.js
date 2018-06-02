@@ -9,7 +9,7 @@ class ArrpMultipleValue {
   }
 
   toString() {
-    return this.values.map((elt) => elt.toString()).join('\n');
+    return this.values.map((elt) => String(elt)).join('\n');
   }
 
   inspect() {

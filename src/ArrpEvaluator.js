@@ -39,6 +39,8 @@ class ArrpEvaluator{
       return sexp;
     } else if (sexp instanceof ArrpSymbol) {
       return this.env.get(sexp);
+    } else if (sexp instanceof ArrpComma) {
+      throw new Error('comma not inside quasi-quote')
     } else if (sexp instanceof Array) {
       if (sexp.length === 0) {
         return sexp;
@@ -50,14 +52,19 @@ class ArrpEvaluator{
   }
 
   evalFromStack(sexps, multiple) {
-    if (sexps.stack.length === 0) return '#<No Input>'; //TODO
-    let tmp = undefined; // TODO
-    while (true) {
-      let sexp = sexps.dequeue();
-      if (sexp === undefined) break;
-      tmp = this.eval(sexp, multiple);
+    try {
+      if (sexps.stack.length === 0) return '#<No Input>'; //TODO
+      let tmp = undefined; // TODO
+      while (true) {
+        let sexp = sexps.dequeue();
+        if (sexp === undefined) break;
+        tmp = this.eval(sexp, multiple);
+      }
+      return tmp;
+    } catch (error) {
+      return new ArrpMultipleValue(null, error);
     }
-    return tmp;
+
   }
 }
 
