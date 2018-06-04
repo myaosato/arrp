@@ -8,6 +8,8 @@ const ArrpFunction = require(__dirname + '/ArrpFunction.js');
 const ArrpSpecial = require(__dirname + '/ArrpSpecial.js');
 const ArrpMultipleValue = require(__dirname + '/ArrpMultipleValue.js');
 
+const ReturnFromFunctionError = require(__dirname + '/ReturnFromFunctionError.js');
+
 const builtins = new Map();
 builtins.set('quote', new ArrpSpecial((evaluator, val) =>　{
   return val;
@@ -71,6 +73,16 @@ const randomNumeal = (digit) => {
   return ret;
 }
 
+// MultipleValue
+builtins.set('multiple-value-list', new ArrpSpecial((evaluator, sexp) =>　{
+  let val = evaluator.eval(sexp);
+  if (val instanceof ArrpMultipleValue) {
+    return val.values.slice(0);
+  } else {
+    return [val];
+  }
+}));
+
 builtins.set('gensym', new ArrpSpecial((evaluator) =>　{
   return ArrpSymbol.make(Symbol(randomNumeal(6)));
 }));
@@ -82,19 +94,21 @@ builtins.set('let', new ArrpSpecial((evaluator, params, ...body) =>　{
   return (new ArrpFunction(evaluator.env, vars, body)).call(evaluator, vals);
 }));
 
-
 // Read
 builtins.set('read', new ArrpSpecial((evaluator, str) =>　{
   let stackOrNull = (new ArrpReader()).read(str, true);
   return stackOrNull? stackOrNull.dequeue(): null;
 }));
 
-
 // Eval
 builtins.set('eval', new ArrpSpecial((evaluator, sexp) =>　{
   return evaluator.eval(evaluator.eval(sexp));
 }));
 
+// Return
+builtins.set('return', ((val) =>　{
+  throw new ReturnFromFunctionError(val);
+}));
 
 // Array
 builtins.set('arrayp', (val) =>　{
@@ -109,7 +123,7 @@ builtins.set('nth', (arr, ind) =>　{
   return arr[ind];
 });
 
-builtins.set('replace-nth', (arr, ind, val) =>　{
+builtins.set('replace-nth!', (arr, ind, val) =>　{
   arr[ind] = val;
   return val;
 });
@@ -125,6 +139,19 @@ builtins.set('rest', (arr) =>　{
 builtins.set('concat', (arr, ...arrs) =>　{
   return arr.concat.apply(arr, arrs);
 });
+
+builtins.set('copy-within!', (arr, target, start, end) =>　{
+  if (start === undefined) return arr.copyWith.call(arr, target);
+  if (end === undefined) return arr.copyWith.call(arr, target, start);
+  return arr.copyWith.call(arr, target, start, end);
+});
+
+builtins.set('fill!', (arr, value, start, end) =>　{
+  if (start === undefined) return arr.fill.call(arr, value);
+  if (end === undefined) return arr.fill.call(arr, value, start);
+  return arr.value.call(arr, target, start, end);
+});
+
 
 
 

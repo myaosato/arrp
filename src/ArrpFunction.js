@@ -1,5 +1,6 @@
 'use strict';
 const ArrpSymbol = require(__dirname + '/ArrpSymbol.js');
+const ReturnFromFunctionError = require(__dirname + '/ReturnFromFunctionError.js');
 
 class ArrpFunction {
     constructor (env, params, body) {
@@ -16,10 +17,19 @@ class ArrpFunction {
     }
 
     call(evaluator, args) {
+
       evaluator.env.enter(this.env);
       this.bind(evaluator.env, args);
-      let result = evaluator.eval(this.body);
-      evaluator.env.exit();
+      let result;
+      try {
+        result = evaluator.eval(this.body);
+        evaluator.env.exit();
+      } catch (error) {
+        if (error instanceof ReturnFromFunctionError) {
+          return error.val;
+        }
+        throw error;
+      }
       return result;
     }
 }
