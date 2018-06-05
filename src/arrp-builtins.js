@@ -15,17 +15,40 @@ builtins.set('quote', new ArrpSpecial((evaluator, val) =>　{
   return val;
 }));
 
-builtins.set('quasi-quote', new ArrpSpecial((evaluator, val) =>　{
-  let expandQuasiQuote = (sexp) => {
-    if (sexp instanceof Array) {
-      return sexp.map((elt) => expandQuasiQuote(elt));
-    } else if (sexp instanceof ArrpComma) {
-      return evaluator.eval(sexp.sexp);
-    } else {
-      return sexp;
+let expandQuasiQuote = (sexp, evaluator) => {
+  if (sexp instanceof Array) {
+    if (sexp[0] instanceof ArrpSymbol && sexp[0].identifier === 'quasi-quote'){
+      evaluator.quasiQuoteCounter++;
+      let arr = [sexp[0], expandQuasiQuote(sexp[1], evaluator)];
+      evaluator.quasiQuoteCounter--;
+      return arr;
     }
+    return sexp.map((elt) => expandQuasiQuote(elt, evaluator));
+  } else if (sexp instanceof ArrpComma) {
+    console.log(evaluator.quasiQuoteCounter + ':' + evaluator.commaCounter)
+    if (evaluator.quasiQuoteCounter > evaluator.commaCounter + 1) {
+      evaluator.commaCounter++;
+      let val = ArrpComma.make(expandQuasiQuote(sexp.sexp, evaluator));
+      evaluator.commaCounter--;
+      return val;
+    } else if (evaluator.quasiQuoteCounter === evaluator.commaCounter + 1) {
+      evaluator.commaCounter++;
+      let val = evaluator.eval(sexp.sexp);
+      evaluator.commaCounter--;
+      return val;
+    } else {
+      return val; // TODO
+    }
+  } else {
+    return sexp;
   }
-  return expandQuasiQuote(val);
+};
+
+builtins.set('quasi-quote', new ArrpSpecial((evaluator, sexp) =>　{
+  evaluator.quasiQuoteCounter++;
+  let ret = expandQuasiQuote(sexp, evaluator);
+  evaluator.quasiQuoteCounter--;
+  return ret;
 }));
 
 

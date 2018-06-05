@@ -9,6 +9,8 @@ const ArrpMultipleValue = require(__dirname + '/ArrpMultipleValue.js');
 class ArrpEvaluator{
   constructor(env) {
       this.env = env;
+      this.quasiQuoteCounter = 0;
+      this.commaCounter = 0;
   }
 
   __getSingleValue(val){
@@ -40,8 +42,10 @@ class ArrpEvaluator{
       return sexp;
     } else if (sexp instanceof ArrpSymbol) {
       return this.env.get(sexp);
-    } else if (sexp instanceof ArrpComma) {
-      throw new Error('comma not inside quasi-quote')
+
+    //} else if (sexp instanceof ArrpComma) {
+    //  throw new Error('comma not inside quasi-quote')
+
     } else if (sexp instanceof Array) {
       if (sexp.length === 0) {
         return sexp;

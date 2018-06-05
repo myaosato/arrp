@@ -44,6 +44,7 @@ const runTests = () => {
 
 
 console.log('Load Arrp and playground');
+const ArrpComma = require(__dirname + '/../src/ArrpComma.js');
 const ArrpSymbol = require(__dirname + '/../src/ArrpSymbol.js');
 const ArrpReader = require(__dirname + '/../src/ArrpReader.js');
 const ar = new ArrpReader();
@@ -60,8 +61,10 @@ const readEval = (str) => ae.evalFromStack((read(str)));
 //printFull(read('(+ 1 2 3 4 5 6 7 8 9 10)'));
 let a = read(`'(+ 1 1)`).dequeue();
 let b = read(`(quote (+ 1 1))`).dequeue();
-console.log(a[0].identifier === b[0].identifier);
 
+console.log(a[0].identifier === b[0].identifier);
+let c = read('``(+ ,a ,,a)').dequeue();
+printFull(c[1][1][2].sexp instanceof ArrpComma);
 console.log(readEval(`
 (defun fact (num)
   (if (<= num 1)
@@ -69,6 +72,7 @@ console.log(readEval(`
       (* num (fact (- num 1)))))`));
 console.log(readEval(`(fact 10)`));
 
+/*
 console.log('Start Arrp test');
 testCase('parse integer [42]', () => readEval('42'), 42);
 testCase('parse integer [0o52]', () => readEval('0o52'), 42);
@@ -93,7 +97,6 @@ testCase('parse undefined', () => readEval('undefined'), undefined);
 testCase('parse true', () => readEval('true'), true);
 testCase('parse false', () => readEval('false'), false);
 
-
 runTests();
-
 console.log('End test');
+*/
