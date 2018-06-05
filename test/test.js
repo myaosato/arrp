@@ -61,10 +61,16 @@ const readEval = (str) => ae.evalFromStack((read(str)));
 //printFull(read('(+ 1 2 3 4 5 6 7 8 9 10)'));
 let a = read(`'(+ 1 1)`).dequeue();
 let b = read(`(quote (+ 1 1))`).dequeue();
-
 console.log(a[0].identifier === b[0].identifier);
+
 let c = read('``(+ ,a ,,a)').dequeue();
 printFull(c[1][1][2].sexp instanceof ArrpComma);
+
+let e = read(`,(r s)`).dequeue();
+printFull(e);
+let d = readEval("(let ((q '(r s))) ``(,,q))");
+printFull(d[1][0]);
+
 console.log(readEval(`
 (defun fact (num)
   (if (<= num 1)

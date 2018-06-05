@@ -6,6 +6,9 @@ class ArrpComma {
   }
 
   toString() {
+    if (this.sexp instanceof Array) {
+      return ',[' + this.sexp.join(', ') + ']'; // TODO
+    }
     return ',' + String(this.sexp); // TODO
   }
   inspect() {
