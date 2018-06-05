@@ -25,7 +25,6 @@ let expandQuasiQuote = (sexp, evaluator) => {
     }
     return sexp.map((elt) => expandQuasiQuote(elt, evaluator));
   } else if (sexp instanceof ArrpComma) {
-    console.log(evaluator.quasiQuoteCounter + ':' + evaluator.commaCounter)
     if (evaluator.quasiQuoteCounter > evaluator.commaCounter + 1) {
       evaluator.commaCounter++;
       let val = ArrpComma.make(expandQuasiQuote(sexp.sexp, evaluator));
