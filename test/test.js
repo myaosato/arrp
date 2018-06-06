@@ -71,6 +71,9 @@ printFull(e);
 let d = readEval("(let ((q '(r s))) ``(,,q))");
 printFull(d[1][0]);
 
+let f = readEval("(let ((q '(r s))) ``(,@,q))");
+printFull(f[1][0].sexp.sexp);
+
 console.log(readEval(`
 (defun fact (num)
   (if (<= num 1)

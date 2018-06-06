@@ -2,6 +2,7 @@
 const ArrpSexpStack = require(__dirname + '/ArrpSexpStack.js')
 const ArrpSymbol = require(__dirname + '/ArrpSymbol.js');
 const ArrpComma = require(__dirname + '/ArrpComma.js');
+const ArrpCommaAt = require(__dirname + '/ArrpCommaAt.js');
 
 class ArrpReader{
   constructor() {
@@ -22,6 +23,8 @@ class ArrpReader{
         sexp = [ArrpSymbol.make('quasi-quote'), sexp];
       } else if (quote === ',') {
         sexp = ArrpComma.make(sexp);
+      } else if (quote === ',@') {
+        sexp = ArrpCommaAt.make(sexp);
       }
       return this.__push(sexp)
     }
@@ -116,7 +119,10 @@ class ArrpReader{
     if (input[pos] === undefined) return [null, false, null];
     if (input[pos] === "'") return ["'", pos + 1, "'"];
     if (input[pos] === '`') return ['`', pos + 1, '`'];
-    if (input[pos] === ',') return [',', pos + 1, `,`];
+    if (input[pos] === ',') {
+      if (input[pos + 1] === '@') return [',@', pos + 2, `,@`];
+      return [',', pos + 1, `,`];
+    }
     if (input[pos] === '(') return ['(', pos + 1, '('];
     if (input[pos] === ')') return [')', pos + 1, ')'];
     if (input[pos].match(/^\s/)) return ['', pos + 1, null];
@@ -135,6 +141,7 @@ class ArrpReader{
       if (token === "'"
         || token === '`'
         || token === `,`
+        || token === `,@`
       ) {
         this.__setQuote(token);
         continue;

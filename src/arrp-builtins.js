@@ -1,12 +1,14 @@
 'use strict';
 const ArrpSymbol = require(__dirname + '/ArrpSymbol.js');
 const ArrpComma = require(__dirname + '/ArrpComma.js');
+const ArrpCommaAt = require(__dirname + '/ArrpCommaAt.js');
 const ArrpReader = require(__dirname + '/ArrpReader.js');
 
 const ArrpMacro = require(__dirname + '/ArrpMacro.js');
 const ArrpFunction = require(__dirname + '/ArrpFunction.js');
 const ArrpSpecial = require(__dirname + '/ArrpSpecial.js');
 const ArrpMultipleValue = require(__dirname + '/ArrpMultipleValue.js');
+const ArrpExpandedValues = require(__dirname + '/ArrpExpandedValues.js');
 
 const ReturnFromFunctionError = require(__dirname + '/ReturnFromFunctionError.js');
 
@@ -29,12 +31,28 @@ let expandQuasiQuote = (sexp, evaluator) => {
       }
       return arr;
     }
-    return sexp.map((elt) => expandQuasiQuote(elt, evaluator));
+    let arr = [];
+    for (let elt of sexp) {
+      let expanded = expandQuasiQuote(elt, evaluator);
+      if (expanded instanceof ArrpExpandedValues) {
+        let values = expanded.values;
+        if (values instanceof Array) {
+          values.forEach((val) => {
+            arr.push(val)
+          });
+        } else {
+          arr.push(values);
+        }
+      } else {
+        arr.push(expanded);
+      }
+    }
+    return arr;
   } else if (sexp instanceof ArrpComma) {
     if (evaluator.quasiQuoteCounter > evaluator.commaCounter + 1) {
       evaluator.commaCounter++;
       let val;
-      try {
+      try{
         val = ArrpComma.make(expandQuasiQuote(sexp.sexp, evaluator));
       } catch (e){
         throw e;
@@ -45,8 +63,35 @@ let expandQuasiQuote = (sexp, evaluator) => {
     } else if (evaluator.quasiQuoteCounter === evaluator.commaCounter + 1) {
       evaluator.commaCounter++;
       let val;
-      try {
+      try{
         val = evaluator.eval(sexp.sexp);
+      } catch (e){
+        throw e;
+      } finally {
+        evaluator.commaCounter--;
+      }
+      return val;
+    } else {
+      throw new Error('comma not inside quasi-quote');
+    }
+  } else if (sexp instanceof ArrpCommaAt) {
+    if (evaluator.quasiQuoteCounter > evaluator.commaCounter + 1) {
+      evaluator.commaCounter++;
+      let val;
+      try{
+        val = ArrpCommaAt.make(expandQuasiQuote(sexp.sexp, evaluator));
+      } catch (e){
+        throw e;
+      } finally {
+        evaluator.commaCounter--;
+      }
+      return val;
+    } else if (evaluator.quasiQuoteCounter === evaluator.commaCounter + 1) {
+      evaluator.commaCounter++;
+      let val;
+      try{
+        val = new ArrpExpandedValues(evaluator.eval(sexp.sexp));
+
       } catch (e){
         throw e;
       } finally {
