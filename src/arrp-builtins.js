@@ -19,24 +19,42 @@ let expandQuasiQuote = (sexp, evaluator) => {
   if (sexp instanceof Array) {
     if (sexp[0] instanceof ArrpSymbol && sexp[0].identifier === 'quasi-quote'){
       evaluator.quasiQuoteCounter++;
-      let arr = [sexp[0], expandQuasiQuote(sexp[1], evaluator)];
-      evaluator.quasiQuoteCounter--;
+      let arr;
+      try {
+        arr = [sexp[0], expandQuasiQuote(sexp[1], evaluator)];
+      } catch (e) {
+        throw e;
+      } finally {
+        evaluator.quasiQuoteCounter--;
+      }
       return arr;
     }
     return sexp.map((elt) => expandQuasiQuote(elt, evaluator));
   } else if (sexp instanceof ArrpComma) {
     if (evaluator.quasiQuoteCounter > evaluator.commaCounter + 1) {
       evaluator.commaCounter++;
-      let val = ArrpComma.make(expandQuasiQuote(sexp.sexp, evaluator));
-      evaluator.commaCounter--;
+      let val;
+      try {
+        val = ArrpComma.make(expandQuasiQuote(sexp.sexp, evaluator));
+      } catch (e){
+        throw e;
+      } finally {
+        evaluator.commaCounter--;
+      }
       return val;
     } else if (evaluator.quasiQuoteCounter === evaluator.commaCounter + 1) {
       evaluator.commaCounter++;
-      let val = evaluator.eval(sexp.sexp);
-      evaluator.commaCounter--;
+      let val;
+      try {
+        val = evaluator.eval(sexp.sexp);
+      } catch (e){
+        throw e;
+      } finally {
+        evaluator.commaCounter--;
+      }
       return val;
     } else {
-      return val; // TODO
+      throw new Error('comma not inside quasi-quote');
     }
   } else {
     return sexp;
@@ -45,8 +63,14 @@ let expandQuasiQuote = (sexp, evaluator) => {
 
 builtins.set('quasi-quote', new ArrpSpecial((evaluator, sexp) =>　{
   evaluator.quasiQuoteCounter++;
-  let ret = expandQuasiQuote(sexp, evaluator);
-  evaluator.quasiQuoteCounter--;
+  let ret;
+  try {
+    ret = expandQuasiQuote(sexp, evaluator);
+  } catch (e){
+    throw e;
+  } finally {
+    evaluator.quasiQuoteCounter--;
+  }
   return ret;
 }));
 
