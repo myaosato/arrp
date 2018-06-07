@@ -201,6 +201,7 @@ builtins.set('return', ((val) =>　{
   throw new ReturnFromFunctionError(val);
 }));
 
+
 // Array
 builtins.set('arrayp', (val) =>　{
   return val instanceof Array;
@@ -243,11 +244,20 @@ builtins.set('fill!', (arr, value, start, end) =>　{
   return arr.value.call(arr, target, start, end);
 });
 
-
-
-
 // Logical
 builtins.set('not', (arg) => arg === false? true: false);
+builtins.set('and', (...args) => {
+    for (let elt of args){
+      if (elt === false) return false;
+    }
+    return args[args.length -1];
+});
+builtins.set('or', (...args) => {
+    for (let elt of args){
+      if (elt !== false) return elt;
+    }
+    return false;
+});
 
 // Comparision
 const compare = (ifnot) => (...args) => {
@@ -272,6 +282,8 @@ builtins.set('-', (top, ...numbers) => numbers.length === 0? - top: top - number
 builtins.set('*', (...numbers) =>　numbers.reduce((prev, curr) => prev * curr));
 builtins.set('/', (top, ...numbers) => numbers.length === 0? 1 / top: top / numbers.reduce((prev, curr) => prev * curr));
 builtins.set('rem', (num1, num2) => new ArrpMultipleValue(Math.floor(num1 / num2), num1 % num2));
+
+//
 
 // EXPORTS
 module.exports = builtins;
