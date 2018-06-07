@@ -3,10 +3,8 @@ const ArrpSymbol = require(__dirname + '/../src/ArrpSymbol.js');
 const ArrpEval = require(__dirname + '/../src/ArrpEvaluator.js');
 const ArrpReader = require(__dirname + '/../src/ArrpReader.js');
 
-const builtins = require(__dirname + '/../src/arrp-builtins.js');
-
 let ar = new ArrpReader();
-const ae = new ArrpEval(new ArrpEnvironment(builtins));
+const ae = new ArrpEval(new ArrpEnvironment(new Map()));
 
 const reader = require('readline').createInterface({
   input: process.stdin,

@@ -283,7 +283,7 @@ builtins.set('*', (...numbers) =>　numbers.reduce((prev, curr) => prev * curr))
 builtins.set('/', (top, ...numbers) => numbers.length === 0? 1 / top: top / numbers.reduce((prev, curr) => prev * curr));
 builtins.set('rem', (num1, num2) => new ArrpMultipleValue(Math.floor(num1 / num2), num1 % num2));
 
-//
+//Math
 
 // EXPORTS
 module.exports = builtins;

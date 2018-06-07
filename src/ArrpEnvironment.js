@@ -1,6 +1,8 @@
 'use strict';
+const builtins = require(__dirname + '/arrp-builtins.js');
 class ArrpEnvironment {
   constructor (globalEnv) {
+    this.__builtins = builtins;
     this.globalEnv = globalEnv;
     this.lexicalEnv = new Map();
     this.lexicalEnvStack = [];
@@ -16,6 +18,12 @@ class ArrpEnvironment {
   getGlobal (sym) {
     let key = sym.identifier;
     if (this.globalEnv.has(key)) return this.globalEnv.get(key);
+    return this.getBuiltin(sym);
+  }
+
+  getBuiltin (sym) {
+    let key = sym.identifier;
+    if (this.__builtins.has(key)) return this.__builtins.get(key);
     return null; // TODO Error
   }
 

@@ -50,9 +50,8 @@ const ArrpReader = require(__dirname + '/../src/ArrpReader.js');
 const ar = new ArrpReader();
 const read = (str) => ar.read(str);
 
-const builtins = require(__dirname + '/../src/arrp-builtins.js');
 const ArrpEnvironment = require(__dirname + '/../src/ArrpEnvironment.js');
-const env = new ArrpEnvironment(builtins);
+const env = new ArrpEnvironment(new Map());
 
 const ArrpEval = require(__dirname + '/../src/ArrpEvaluator.js');
 const ae = new ArrpEval(env);
