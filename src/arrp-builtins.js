@@ -148,11 +148,15 @@ builtins.set('set!', new ArrpSpecial((evaluator, sym, val) =>　{
   return undefined; // TODO
 }));
 
-builtins.set('setg!', new ArrpSpecial((evaluator, sym, val) =>　{
+builtins.set('set-g!', new ArrpSpecial((evaluator, sym, val) =>　{
   return evaluator.env.setGlobal(sym, evaluator.eval(val));
 }));
 
-builtins.set('defun', new ArrpSpecial((evaluator, sym, params, ...body) =>　{
+builtins.set('delete-g!', new ArrpSpecial((evaluator, sym) =>　{
+  return evaluator.env.deleteGlobal(sym);
+}));
+
+builtins.set('defun!', new ArrpSpecial((evaluator, sym, params, ...body) =>　{
   return evaluator.env.setGlobal(sym, new ArrpFunction(evaluator.env, params, body));
 }));
 

@@ -38,6 +38,12 @@ class ArrpEnvironment {
     return val;
   }
 
+  deleteGlobal (sym) {
+    this.globalEnv.delete(sym.identifier);
+    return sym;
+  }
+
+
   enter(env) {
     this.lexicalEnvStack.push(this.lexicalEnv);
     this.lexicalEnv = env;
