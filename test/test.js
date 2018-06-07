@@ -80,8 +80,9 @@ console.log(readEval(`
       (* num (fact (- num 1)))))`));
 console.log(readEval(`(fact 10)`));
 
-/*
 console.log('Start Arrp test');
+
+/*
 testCase('parse integer [42]', () => readEval('42'), 42);
 testCase('parse integer [0o52]', () => readEval('0o52'), 42);
 testCase('parse integer [-0o52]', () => readEval('-0o52'), -42);
@@ -106,5 +107,5 @@ testCase('parse true', () => readEval('true'), true);
 testCase('parse false', () => readEval('false'), false);
 
 runTests();
-console.log('End test');
 */
+console.log('End test');

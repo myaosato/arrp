@@ -163,7 +163,7 @@ builtins.set('defun!', new ArrpSpecial((evaluator, sym, params, ...body) =>　{
 const randomNumeal = (digit) => {
   let ret = '';
   for (let c = 0; c < digit; c++){
-    ret += Math.ceil(Math.random() * 10);
+    ret += Math.floor(Math.random() * 10);
   }
   return ret;
 }
@@ -287,7 +287,37 @@ builtins.set('*', (...numbers) =>　numbers.reduce((prev, curr) => prev * curr))
 builtins.set('/', (top, ...numbers) => numbers.length === 0? 1 / top: top / numbers.reduce((prev, curr) => prev * curr));
 builtins.set('rem', (num1, num2) => new ArrpMultipleValue(Math.floor(num1 / num2), num1 % num2));
 
-//Math
+// Math
+builtins.set('+E+', Math.E);
+builtins.set('+LN-2+', Math.LN2);
+builtins.set('+LN-10+', Math.LN10);
+builtins.set('+LOG-2-E+', Math.LOG2E);
+builtins.set('+LOG-10-E+', Math.LOG10E);
+builtins.set('+PI+', Math.PI);
+builtins.set('+SQRT-1/2+', Math.SQRT1_2);
+builtins.set('+SQRT-2+', Math.SQRT2);
+
+const mathFuncNames = [
+  'abs',
+  'acos', 'acosh', 'asin', 'asinh', 'atan', 'atanh',
+  'cos', 'cosh', 'sin', 'sinh', 'tan', 'tanh',
+  'exp', 'expm1', 'log', 'log1p', 'log10',
+  'cbrt', 'sqrt',
+  'ceil', 'floor',
+  'fround', 'round',
+  'clz32', 'sign', 'trunc',
+];
+for (let name of mathFuncNames) {
+  builtins.set(name, (num) =>　Math[name](num));
+}
+
+builtins.set('atan2', (y, x) =>　Math.atan2(y, x));
+builtins.set('hypot', (...numbers) =>　Math.hypot.apply(null, numbers));
+builtins.set('imul', (x, y) =>　Math.imul(x, y));
+builtins.set('max', (...numbers) =>　Math.max.apply(null, numbers));
+builtins.set('min', (...numbers) =>　Math.min.apply(null, numbers));
+builtins.set('pow', (x, y) =>　Math.pow(x, y));
+
 
 // EXPORTS
 module.exports = builtins;
