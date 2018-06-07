@@ -1,0 +1,7 @@
+(hypot 3 4)
+(atan2 1 2)
+(max 1 2 3)
+(ceil 4.5)
+(trunc 5.4)
+(= (sqrt 2) +SQRT-2+)
++LN-10+
