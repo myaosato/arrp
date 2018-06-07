@@ -318,6 +318,33 @@ builtins.set('max', (...numbers) =>　Math.max.apply(null, numbers));
 builtins.set('min', (...numbers) =>　Math.min.apply(null, numbers));
 builtins.set('pow', (x, y) =>　Math.pow(x, y));
 
+// Date
+builtins.set('date', (year, month = 0, day = 1, hour = 0, minutes = 0, seconds = 0, milliseconds = 0) => new Date(year, month, day, hour, minutes, seconds, milliseconds));
+builtins.set('date-from-time', (time) => new Date(time));
+builtins.set('date-now', Date.now);
+builtins.set('date-utc', Date.UTC);
+builtins.set('date-time', (date) => date.getTime());
+builtins.set('date-year', (date) => date.getFullYear());
+builtins.set('date-month1', (date) => date.getMonth() + 1);
+builtins.set('date-month0', (date) => date.getMonth());
+builtins.set('date-date', (date) => date.getDate());
+builtins.set('date-day', (date) => date.getDay());
+builtins.set('date-hours', (date) => date.getHours());
+builtins.set('date-minutes', (date) => date.getMinutes());
+builtins.set('date-secondes', (date) => date.getSeconds());
+builtins.set('date-millisecondes', (date) => date.getMilliseconds());
+builtins.set('date-timezone-offset', (date) => date.getTimezoneOffset());
+
+builtins.set('date-utc-year', (date) => date.getUTCFullYear());
+builtins.set('date-utc-month1', (date) => date.getUTCMonth() + 1);
+builtins.set('date-utc-month0', (date) => date.getUTCMonth());
+builtins.set('date-utc-date', (date) => date.getUTCDate());
+builtins.set('date-utc-day', (date) => date.getUTCDay());
+builtins.set('date-utc-hours', (date) => date.getUTCHours());
+builtins.set('date-utc-minutes', (date) => date.getUTCMinutes());
+builtins.set('date-utc-secondes', (date) => date.getUTCSeconds());
+builtins.set('date-utc-millisecondes', (date) => date.getUTCMilliseconds());
+
 
 // EXPORTS
 module.exports = builtins;
