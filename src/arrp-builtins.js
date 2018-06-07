@@ -125,6 +125,17 @@ builtins.set('if', new ArrpSpecial((evaluator, cond, thenSexp, elseSexp) =>　{
   return evaluator.eval(cond) !== false? evaluator.eval(thenSexp): evaluator.eval(elseSexp);
 }));
 
+builtins.set('cond', new ArrpSpecial((evaluator, ...cond_bodys) =>　{
+  for (let cond_body of cond_bodys) {
+    if (!cond_body instanceof Array) throw Error('cond form error') // TODO
+    if (evaluator.eval(cond_body[0]) !== false) {
+      return evaluator.eval([ArrpSymbol.make('progn')].concat(cond_body.slice(1)));
+    }
+  }
+  return undefined;
+}));
+
+
 builtins.set('lambda', new ArrpSpecial((evaluator, params, ...body) =>　{
   return new ArrpFunction(evaluator.env, params, body);
 }));

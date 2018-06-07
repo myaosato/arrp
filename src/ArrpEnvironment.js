@@ -50,7 +50,12 @@ class ArrpEnvironment {
   }
 
   exit() {
-    this.lexicalEnv = this.lexicalEnvStack.pop();
+    if(this.lexicalEnvStack.length === 1) {
+      this.lexicalEnv = new Map();
+      this.lexicalEnvStack.pop();
+    } else {
+      this.lexicalEnv = this.lexicalEnvStack.pop();
+    }
   }
 
   getLexialEnv() {
