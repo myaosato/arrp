@@ -314,20 +314,32 @@ const mathFuncNames = [
   'cos', 'cosh', 'sin', 'sinh', 'tan', 'tanh',
   'exp', 'expm1', 'log', 'log1p', 'log10',
   'cbrt', 'sqrt',
-  'ceil', 'floor',
+  'ceil', 'floor', 'trunc',
   'fround', 'round',
-  'clz32', 'sign', 'trunc',
+  'clz32', 'sign',
+  'atan2', 'hypot', 'imul', 'max', 'min', 'pow'
 ];
 for (let name of mathFuncNames) {
-  builtins.set(name, (num) =>　Math[name](num));
+  builtins.set(name, Math[name]);
 }
 
-builtins.set('atan2', (y, x) =>　Math.atan2(y, x));
-builtins.set('hypot', (...numbers) =>　Math.hypot.apply(null, numbers));
-builtins.set('imul', (x, y) =>　Math.imul(x, y));
-builtins.set('max', (...numbers) =>　Math.max.apply(null, numbers));
-builtins.set('min', (...numbers) =>　Math.min.apply(null, numbers));
-builtins.set('pow', (x, y) =>　Math.pow(x, y));
+// Number
+builtins.set('+EPSILON+', Number.EPSILON);
+builtins.set('+MAX-SAFE-INTEGER+', Number.MAX_SAFE_INTEGER);
+builtins.set('+MIN-SAFE-INTEGER+', Number.MIN_SAFE_INTEGER);
+builtins.set('+MAX-VALUE+', Number.MAX_VALUE);
+builtins.set('+MIN-VALUE+', Number.MIN_VALUE);
+
+builtins.set('is-NaN', Number.isNaN);
+builtins.set('is-finite', Number.isFinite);
+builtins.set('is-integer', Number.isInteger);
+builtins.set('is-safe-nteger', Number.isSafeInteger);
+builtins.set('parse-float', Number.parseFloat);
+builtins.set('parse-int', Number.parseInt);
+builtins.set('to-exponential', (num, fd) => (new Number(num)).toExponential(fd));
+builtins.set('to-fixed', (num, digits) => (new Number(num)).toFixed(digits));
+builtins.set('to-precision', (num, precision) => (new Number(num)).toPrecision(precision));
+
 
 // Date
 builtins.set('date', (year, month = 1, day = 1, hour = 0, minutes = 0, seconds = 0, milliseconds = 0) => new Date(year, month - 1, day, hour, minutes, seconds, milliseconds));
@@ -377,6 +389,8 @@ builtins.set('to-date-json', (date) => date.toJSON());
 builtins.set('to-locale-datetime-string', (date, locales, options) => date.toLocaleString(locales, options));
 builtins.set('to-locale-date-string', (date, locales, options) => date.toLocaleDateString(locales, options));
 builtins.set('to-locale-time-string', (date, locales, options) => date.toLocaleTimeString(locales, options));
+
+// REGEX
 
 
 // EXPORTS

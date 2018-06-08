@@ -42,23 +42,23 @@ class ArrpReader{
   }
 
   __resolveLiteral(str) {
-    if (str === 'Infinity') return Infinity;
-    if (str === 'NaN') return new ArrpSymbol('NaN');
+    if (str === 'Infinity') return Number.POSITIVE_INFINITY;
+    if (str === '-Infinity') return Number.NEGATIVE_INFINITY;
+    if (str === 'NaN') return Number.NaN;
     if (str === 'undefined') return undefined;
     if (str === 'null') return null;
     // Boolean
     if (str === 'true') return true;
     if (str === 'false') return false;
     // Integer
-    if (str.match(/^[+-]?[1-9]\d*$/)) return eval(str);
-    if (str.match(/^[+-]?0[oO][0-7]+$/)) return eval(str);
-    if (str.match(/^[+-]?0[xX][\da-fA-F]+$/)) return eval(str);
-    if (str.match(/^[+-]?0[bB][01]+$/)) return eval(str);
+    if (str.match(/^[+-]?[1-9]\d*$/)) return Number(str);
+    if (str.match(/^[+-]?0[oO][0-7]+$/)) return Number(str);
+    if (str.match(/^[+-]?0[xX][\da-fA-F]+$/)) return Number(str);
+    if (str.match(/^[+-]?0[bB][01]+$/)) return Number(str);
     // Float
-    if (str.match(/^[+-]?(\d+(.\d*)?|.\d+)([Ee][+-]?\d+)?$/)) return eval(str);
+    if (str.match(/^[+-]?(\d+(.\d*)?|.\d+)([Ee][+-]?\d+)?$/)) return Number(str);
     // String
     if (str.match(/^"([^\\"]|\\0|\\b|\\f|\\n|\\r|\\t|\\v|\\'|\\"|\\\\|\\[0-3][0-7][0-7]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\u\{[0-9a-fA-F]{5}\})*"$/)) return eval(str);
-    // Regex TODO
     //
     return new ArrpSymbol(str);
   }
@@ -128,7 +128,6 @@ class ArrpReader{
     if (input[pos].match(/^\s/)) return ['', pos + 1, null];
     if (input[pos] === ';') return this.__purgeComment(input, pos);
     if (input[pos] === '"') return this.__makeString(input, pos);
-    //if (input[pos] === ',') return this.__makeComma(input, pos); TODO
     return this.__makeToken(input, pos);
   };
 
