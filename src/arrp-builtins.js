@@ -216,6 +216,13 @@ builtins.set('return', ((val) =>　{
   throw new ReturnFromFunctionError(val);
 }));
 
+
+// URI
+builtins.set('decode-uri', decodeURI)
+builtins.set('encode-uri', encodeURI)
+builtins.set('decode-uri-component', decodeURIComponent)
+builtins.set('encode-uri-component', encodeURIComponent)
+
 // Logical
 builtins.set('not', (arg) => arg === false? true: false);
 builtins.set('and', (...args) => {
@@ -384,6 +391,14 @@ builtins.set('fill!', (arr, value, start, end) =>　{
   return arr.value.call(arr, target, start, end);
 });
 
+builtins.set('reduce', new ArrpSpecial((evaluator, arr, func, init) => {
+  arr = evaluator.eval(arr);
+  func = evaluator.eval(func);
+  init = evaluator.eval(init);
+  return arr.reduce((...args) => {
+    return evaluator.eval(([func]).concat(args));
+  }, init);
+}));
 
 // EXPORTS
 module.exports = builtins;
