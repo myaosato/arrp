@@ -330,31 +330,53 @@ builtins.set('min', (...numbers) =>　Math.min.apply(null, numbers));
 builtins.set('pow', (x, y) =>　Math.pow(x, y));
 
 // Date
-builtins.set('date', (year, month = 0, day = 1, hour = 0, minutes = 0, seconds = 0, milliseconds = 0) => new Date(year, month, day, hour, minutes, seconds, milliseconds));
+builtins.set('date', (year, month = 1, day = 1, hour = 0, minutes = 0, seconds = 0, milliseconds = 0) => new Date(year, month - 1, day, hour, minutes, seconds, milliseconds));
 builtins.set('date-from-time', (time) => new Date(time));
 builtins.set('date-now', Date.now);
 builtins.set('date-utc', Date.UTC);
 builtins.set('date-time', (date) => date.getTime());
 builtins.set('date-year', (date) => date.getFullYear());
-builtins.set('date-month1', (date) => date.getMonth() + 1);
-builtins.set('date-month0', (date) => date.getMonth());
+builtins.set('date-month', (date) => date.getMonth() + 1);
 builtins.set('date-date', (date) => date.getDate());
 builtins.set('date-day', (date) => date.getDay());
 builtins.set('date-hours', (date) => date.getHours());
 builtins.set('date-minutes', (date) => date.getMinutes());
-builtins.set('date-secondes', (date) => date.getSeconds());
-builtins.set('date-millisecondes', (date) => date.getMilliseconds());
+builtins.set('date-seconds', (date) => date.getSeconds());
+builtins.set('date-milliseconds', (date) => date.getMilliseconds());
 builtins.set('date-timezone-offset', (date) => date.getTimezoneOffset());
-
 builtins.set('date-utc-year', (date) => date.getUTCFullYear());
-builtins.set('date-utc-month1', (date) => date.getUTCMonth() + 1);
-builtins.set('date-utc-month0', (date) => date.getUTCMonth());
+builtins.set('date-utc-month', (date) => date.getUTCMonth() + 1);
 builtins.set('date-utc-date', (date) => date.getUTCDate());
 builtins.set('date-utc-day', (date) => date.getUTCDay());
 builtins.set('date-utc-hours', (date) => date.getUTCHours());
 builtins.set('date-utc-minutes', (date) => date.getUTCMinutes());
-builtins.set('date-utc-secondes', (date) => date.getUTCSeconds());
-builtins.set('date-utc-millisecondes', (date) => date.getUTCMilliseconds());
+builtins.set('date-utc-seconds', (date) => date.getUTCSeconds());
+builtins.set('date-utc-milliseconds', (date) => date.getUTCMilliseconds());
+
+builtins.set('set-date-time!', (date, time) => date.setTime(time));
+builtins.set('set-date-year!', (date, year) => date.setFullYear(year));
+builtins.set('set-date-month!', (date, month1) => date.setMonth(month1 - 1));
+builtins.set('set-date-date!', (date, dateVal) => date.setDate(dateVal));
+builtins.set('set-date-hours!', (date, hours) => date.setHours(hours));
+builtins.set('set-date-minutes!', (date, minute) => date.getMinutes(minutes));
+builtins.set('set-date-seconds!', (date, seconds) => date.getSeconds(seconds));
+builtins.set('set-date-millisecondes!', (date, milliseconds) => date.getMilliseconds(milliseconds));
+builtins.set('set-date-utc-year!', (date, year) => date.setUTCFullYear(year));
+builtins.set('set-date-utc-month!', (date, month1) => date.setUTCMonth(month - 1));
+builtins.set('set-date-utc-date!', (date, dateVal) => date.setUTCDate(dateVal));
+builtins.set('set-date-utc-hours!', (date, hours) => date.setUTCHours(hours));
+builtins.set('set-date-utc-minutes!', (date, minute) => date.getUTCMinutes(minutes));
+builtins.set('set-date-utc-seconds!', (date, seconds) => date.getUTCSeconds(seconds));
+builtins.set('set-date-utc-millisecondes!', (date, milliseconds) => date.getUTCMilliseconds(milliseconds));
+
+builtins.set('to-date-string', (date) => date.toDateString());
+builtins.set('to-time-string', (date) => date.toTimeString());
+builtins.set('to-utc-string', (date) => date.toUTCString());
+builtins.set('to-date-iso-string', (date) => date.toISOString());
+builtins.set('to-date-json', (date) => date.toJSON());
+builtins.set('to-locale-datetime-string', (date, locales, options) => date.toLocaleString(locales, options));
+builtins.set('to-locale-date-string', (date, locales, options) => date.toLocaleDateString(locales, options));
+builtins.set('to-locale-time-string', (date, locales, options) => date.toLocaleTimeString(locales, options));
 
 
 // EXPORTS
