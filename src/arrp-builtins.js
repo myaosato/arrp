@@ -140,7 +140,7 @@ builtins.set('lambda', new ArrpSpecial((evaluator, params, ...body) =>　{
   return new ArrpFunction(evaluator.env, params, body);
 }));
 
-builtins.set('defmacro', new ArrpSpecial((evaluator, sym, params, ...body) =>　{
+builtins.set('defmacro!', new ArrpSpecial((evaluator, sym, params, ...body) =>　{
   return evaluator.env.setGlobal(sym, new ArrpMacro(evaluator.env, params, body));
 }));
 

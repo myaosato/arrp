@@ -58,23 +58,12 @@ const ae = new ArrpEval(env);
 const readEval = (str) => ae.evalFromStack((read(str)));
 //printFull(read('((lambda (x) (list x (list (quote quote) x))) (quote (lambda (x) (list x (list (quote quote) x))))'));
 //printFull(read('(+ 1 2 3 4 5 6 7 8 9 10)'));
-let a = read(`'(+ 1 1)`).dequeue();
-let b = read(`(quote (+ 1 1))`).dequeue();
-console.log(a[0].identifier === b[0].identifier);
-
-let c = read('``(+ ,a ,,a)').dequeue();
-printFull(c[1][1][2].sexp instanceof ArrpComma);
-
-let e = read(`,(r s)`).dequeue();
-printFull(e);
-let d = readEval("(let ((q '(r s))) ``(,,q))");
-printFull(d[1][0]);
 
 let f = readEval("(let ((q '(r s))) ``(,@,q))");
-printFull(f[1][0].sexp.sexp);
+printFull(f);
 
 console.log(readEval(`
-(defun fact (num)
+(defun! fact (num)
   (if (<= num 1)
       1
       (* num (fact (- num 1)))))`));
