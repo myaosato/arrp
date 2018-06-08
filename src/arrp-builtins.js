@@ -216,49 +216,6 @@ builtins.set('return', ((val) =>　{
   throw new ReturnFromFunctionError(val);
 }));
 
-
-// Array
-builtins.set('arrayp', (val) =>　{
-  return val instanceof Array;
-});
-
-builtins.set('array', (...vals) =>　{
-  return Array.from(vals);
-});
-
-builtins.set('nth', (arr, ind) =>　{
-  return arr[ind];
-});
-
-builtins.set('replace-nth!', (arr, ind, val) =>　{
-  arr[ind] = val;
-  return val;
-});
-
-builtins.set('first', (arr) =>　{
-  return arr[0];
-});
-
-builtins.set('rest', (arr) =>　{
-  return arr.slice(1);
-});
-
-builtins.set('concat', (arr, ...arrs) =>　{
-  return arr.concat.apply(arr, arrs);
-});
-
-builtins.set('copy-within!', (arr, target, start, end) =>　{
-  if (start === undefined) return arr.copyWith.call(arr, target);
-  if (end === undefined) return arr.copyWith.call(arr, target, start);
-  return arr.copyWith.call(arr, target, start, end);
-});
-
-builtins.set('fill!', (arr, value, start, end) =>　{
-  if (start === undefined) return arr.fill.call(arr, value);
-  if (end === undefined) return arr.fill.call(arr, value, start);
-  return arr.value.call(arr, target, start, end);
-});
-
 // Logical
 builtins.set('not', (arg) => arg === false? true: false);
 builtins.set('and', (...args) => {
@@ -340,7 +297,6 @@ builtins.set('to-exponential', (num, fd) => (new Number(num)).toExponential(fd))
 builtins.set('to-fixed', (num, digits) => (new Number(num)).toFixed(digits));
 builtins.set('to-precision', (num, precision) => (new Number(num)).toPrecision(precision));
 
-
 // Date
 builtins.set('date', (year, month = 1, day = 1, hour = 0, minutes = 0, seconds = 0, milliseconds = 0) => new Date(year, month - 1, day, hour, minutes, seconds, milliseconds));
 builtins.set('date-from-time', (time) => new Date(time));
@@ -390,7 +346,43 @@ builtins.set('to-locale-datetime-string', (date, locales, options) => date.toLoc
 builtins.set('to-locale-date-string', (date, locales, options) => date.toLocaleDateString(locales, options));
 builtins.set('to-locale-time-string', (date, locales, options) => date.toLocaleTimeString(locales, options));
 
-// REGEX
+// RegExp
+builtins.set('regex', (pattern, flags) => RegExp(pattern, flags));
+builtins.set('regex-last-index', (regex) => regex.lastIndex);
+builtins.set('regex-global?', (regex) => regex.global);
+builtins.set('regex-ignoreCase?', (regex) => regex.ignoreCase);
+builtins.set('regex-multiline?', (regex) => regex.multiline);
+builtins.set('regex-source', (regex) => regex.source);
+builtins.set('exec', (regex, target) => regex.exec(target));
+builtins.set('test', (regex, target) => regex.test(target));
+
+
+// String TODO
+builtins.set('char-code', String.fromCharCode);
+
+// Array
+builtins.set('array', (...vals) =>　Array.from(vals));
+builtins.set('nth', (arr, ind) =>　arr[ind]);
+builtins.set('first', (arr) =>　arr[0]);
+builtins.set('rest', (arr) =>　arr.slice(1));
+builtins.set('concat', (arr, ...arrs) =>　arr.concat.apply(arr, arrs));
+
+builtins.set('replace-nth!', (arr, ind, val) =>　{
+  arr[ind] = val;
+  return val;
+});
+
+builtins.set('copy-within!', (arr, target, start, end) =>　{
+  if (start === undefined) return arr.copyWith.call(arr, target);
+  if (end === undefined) return arr.copyWith.call(arr, target, start);
+  return arr.copyWith.call(arr, target, start, end);
+});
+
+builtins.set('fill!', (arr, value, start, end) =>　{
+  if (start === undefined) return arr.fill.call(arr, value);
+  if (end === undefined) return arr.fill.call(arr, value, start);
+  return arr.value.call(arr, target, start, end);
+});
 
 
 // EXPORTS
