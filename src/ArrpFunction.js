@@ -32,6 +32,14 @@ class ArrpFunction {
       }
       return result;
     }
+
+    toString() {
+      return '#<Arrp Function>';
+    }
+
+    inspect() {
+      return this.toString();
+    }
 }
 
 module.exports = ArrpFunction;

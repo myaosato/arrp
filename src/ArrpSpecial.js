@@ -10,7 +10,11 @@ class ArrpSpecial {
   }
 
   toString() {
-    return "Special";
+    return "#<Arrp Special>";
+  }
+
+  inspect() {
+    return this.toString();
   }
 }
 
