@@ -374,36 +374,51 @@ builtins.set('char-code', String.fromCharCode);
 
 // Array
 builtins.set('array', (...vals) =>　Array.from(vals));
+
 builtins.set('nth', (arr, ind) =>　arr[ind]);
+builtins.set('replace-nth!', (arr, ind, val) =>　arr[ind] = val);
+
 builtins.set('first', (arr) =>　arr[0]);
 builtins.set('rest', (arr) =>　arr.slice(1));
+builtins.set('last', (arr) =>　arr[arr.length - 1]);
+
+builtins.set('copy-within!', (arr, ...args) => arr.copyWithin.apply(arr, args));
+builtins.set('fill!', (arr, ...args) => arr.fill.apply(arr, args));
+builtins.set('push!', (arr, ...vals) => arr.push.apply(arr, vals));
+builtins.set('pop!', (arr) => arr.pop());
+builtins.set('unshift!', (arr, ...vals) => arr.unshift.apply(arr, vals));
+builtins.set('shift!', (arr) => arr.shift());
+builtins.set('reverse!', (arr) => arr.reverse());
+builtins.set('sort!', (arr) => arr.sort()); // TODO
+builtins.set('splice!', (arr, ...args) => arr.splice.apply(arr, args));
+
 builtins.set('concat', (arr, ...arrs) =>　arr.concat.apply(arr, arrs));
+builtins.set('join', (arr, sep) =>　arr.join(sep));
+builtins.set('slice', (arr, ...args) =>　arr.slice.apply(arr, args));
+builtins.set('index-of', (arr, ...args) =>　arr.indexOf.apply(arr, args));
+builtins.set('last-index-of', (arr, ...args) =>　arr.lastIndexOf.apply(arr, args));
 
-builtins.set('replace-nth!', (arr, ind, val) =>　{
-  arr[ind] = val;
-  return val;
-});
+const makeIterationMethod = (name) => {
+  return new ArrpSpecial((evaluator, arr, func, ...option) => {
+    arr = evaluator.eval(arr);
+    func = evaluator.eval(func);
+    if (option.length === 0) return arr[name]((...args) => func.call(evaluator, args));
+    option = evaluator.eval(option[0]);
+    return arr[name]((...args) => func.call(evaluator, args), option);
+  });
+};
 
-builtins.set('copy-within!', (arr, target, start, end) =>　{
-  if (start === undefined) return arr.copyWith.call(arr, target);
-  if (end === undefined) return arr.copyWith.call(arr, target, start);
-  return arr.copyWith.call(arr, target, start, end);
-});
+const bindIterationMethod  = (arrpName, jsName) => builtins.set(arrpName, makeIterationMethod(jsName));
 
-builtins.set('fill!', (arr, value, start, end) =>　{
-  if (start === undefined) return arr.fill.call(arr, value);
-  if (end === undefined) return arr.fill.call(arr, value, start);
-  return arr.value.call(arr, target, start, end);
-});
-
-builtins.set('reduce', new ArrpSpecial((evaluator, arr, func, init) => {
-  arr = evaluator.eval(arr);
-  func = evaluator.eval(func);
-  init = evaluator.eval(init);
-  return arr.reduce((...args) => {
-    return evaluator.eval(([func]).concat(args));
-  }, init);
-}));
+bindIterationMethod('for-each', 'forEach');
+bindIterationMethod('every', 'every');
+bindIterationMethod('some', 'some');
+bindIterationMethod('filter', 'filter');
+bindIterationMethod('find', 'find');
+bindIterationMethod('find-index', 'find-index');
+bindIterationMethod('map', 'map');
+bindIterationMethod('reduce', 'reduce');
+bindIterationMethod('reduce-right', 'reduceRight');
 
 // EXPORTS
 module.exports = builtins;
