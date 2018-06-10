@@ -260,6 +260,7 @@ builtins.set('+', (...numbers) =>　numbers.reduce((prev, curr) => prev + curr))
 builtins.set('-', (top, ...numbers) => numbers.length === 0? - top: top - numbers.reduce((prev, curr) => prev + curr));
 builtins.set('*', (...numbers) =>　numbers.reduce((prev, curr) => prev * curr));
 builtins.set('/', (top, ...numbers) => numbers.length === 0? 1 / top: top / numbers.reduce((prev, curr) => prev * curr));
+builtins.set('%', (top, ...numbers) => numbers.length === 0? top: numbers.reduce((prev, curr) => prev % curr, top));
 builtins.set('rem', (num1, num2) => new ArrpMultipleValue(Math.floor(num1 / num2), num1 % num2));
 
 // Object TODO
@@ -368,10 +369,6 @@ builtins.set('regex-source', (regex) => regex.source);
 builtins.set('exec', (regex, target) => regex.exec(target));
 builtins.set('test', (regex, target) => regex.test(target));
 
-
-// String TODO
-builtins.set('char-code', String.fromCharCode);
-
 // Array
 builtins.set('array', (...vals) =>　Array.from(vals));
 
@@ -391,12 +388,7 @@ builtins.set('shift!', (arr) => arr.shift());
 builtins.set('reverse!', (arr) => arr.reverse());
 builtins.set('sort!', (arr) => arr.sort()); // TODO
 builtins.set('splice!', (arr, ...args) => arr.splice.apply(arr, args));
-
-builtins.set('concat', (arr, ...arrs) =>　arr.concat.apply(arr, arrs));
 builtins.set('join', (arr, sep) =>　arr.join(sep));
-builtins.set('slice', (arr, ...args) =>　arr.slice.apply(arr, args));
-builtins.set('index-of', (arr, ...args) =>　arr.indexOf.apply(arr, args));
-builtins.set('last-index-of', (arr, ...args) =>　arr.lastIndexOf.apply(arr, args));
 
 const makeIterationMethod = (name) => {
   return new ArrpSpecial((evaluator, arr, func, ...option) => {
@@ -408,17 +400,57 @@ const makeIterationMethod = (name) => {
   });
 };
 
+const makeIterationWithPredicateMethod = (name) => {
+  return new ArrpSpecial((evaluator, arr, func, ...option) => {
+    arr = evaluator.eval(arr);
+    func = evaluator.eval(func);
+    if (option.length === 0) return arr[name]((...args) => (func.call(evaluator, args) !== false));
+    option = evaluator.eval(option[0]);
+    return arr[name]((...args) => (func.call(evaluator, args) !== false), option);
+  });
+};
+
 const bindIterationMethod  = (arrpName, jsName) => builtins.set(arrpName, makeIterationMethod(jsName));
+const bindIterationWithPredicateMethod  = (arrpName, jsName) => builtins.set(arrpName, makeIterationWithPredicateMethod(jsName));
 
 bindIterationMethod('for-each', 'forEach');
-bindIterationMethod('every', 'every');
-bindIterationMethod('some', 'some');
-bindIterationMethod('filter', 'filter');
-bindIterationMethod('find', 'find');
-bindIterationMethod('find-index', 'find-index');
 bindIterationMethod('map', 'map');
 bindIterationMethod('reduce', 'reduce');
 bindIterationMethod('reduce-right', 'reduceRight');
+bindIterationWithPredicateMethod('every', 'every');
+bindIterationWithPredicateMethod('some', 'some');
+bindIterationWithPredicateMethod('filter', 'filter');
+bindIterationWithPredicateMethod('find', 'find');
+bindIterationWithPredicateMethod('find-index', 'find-index');
+
+// String TODO
+builtins.set('from-char-code', String.fromCharCode);
+builtins.set('char-at', (str, ind) => str.charAt(ind));
+builtins.set('char-code-at', (str, ind) => str.charCodeAt(ind));
+builtins.set('locales-compare', (str, ...args) => str.localeCompare.apply(str, args));
+builtins.set('starts-with', (str, ...args) => str.startsWith.apply(str, args));
+builtins.set('ends-with', (str, ...args) => str.endsWith.apply(str, args));
+builtins.set('match', (str, regexp) => str.match(regexp));
+builtins.set('replace', (str, ...args) => str.replace.apply(str, args)); // TODO
+builtins.set('search', (str, regexp) => str.search(regexp));
+builtins.set('split', (str, ...args) => str.split.apply(str, args));
+builtins.set('substr', (str, ...args) => str.substr.apply(str, args));
+builtins.set('substring', (str, ...args) => str.substring.apply(str, args));
+builtins.set('to-lower-case', (str) => str.toLowerCase());
+builtins.set('to-upper-case', (str) => str.toUpperCase());
+builtins.set('to-locale-lower-case', (str, ...args) => str.toLocaleLowerCase.apply(str, args));
+builtins.set('to-locale-upper-case', (str, ...args) => str.toLocaleUpperCase.apply(str, args));
+builtins.set('trim', (str) => str.trim());
+
+// like Array: String, Array,
+builtins.set('concat', (obj, ...arrs) =>　obj.concat.apply(obj, arrs));
+builtins.set('slice', (obj, ...args) =>　obj.slice.apply(obj, args));
+builtins.set('index-of', (obj, ...args) =>　obj.indexOf.apply(obj, args));
+builtins.set('last-index-of', (obj, ...args) =>　obj.lastIndexOf.apply(obj, args));
+
+// JSON
+builtins.set('json-parse', (str) =>　JSON.parse(str)); // TODO
+builtins.set('json-stringify', (val) =>　JSON.stringify(val)); //TODO
 
 // EXPORTS
 module.exports = builtins;
