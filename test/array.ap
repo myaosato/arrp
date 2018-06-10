@@ -1,0 +1,6 @@
+(set-g! a '(0 1 2 3 4))
+(map a (lambda (elt ind arr) (+ elt (nth arr ind))))
+(reduce a (lambda (acc cur) (+ acc cur)))
+(some a (lambda (elt) (= (% elt 2) 0)))
+(every a (lambda (elt) (= (% elt 2) 0)))
+(every (map a (lambda (elt) (* 2 elt))) (lambda (elt) (= (% elt 2) 0)))

@@ -1,0 +1,2 @@
+(to-locale-date-string (date 1989 10 26))
+(to-locale-string (date 1989 10 26) "ja-JP")

@@ -136,8 +136,8 @@ builtins.set('cond', new ArrpSpecial((evaluator, ...cond_bodys) =>　{
 }));
 
 
-builtins.set('lambda', new ArrpSpecial((evaluator, params, ...body) =>　{
-  return new ArrpFunction(evaluator.env, params, body);
+builtins.set('lambda', new ArrpSpecial((evaluator, paramSexp, ...body) =>　{
+  return new ArrpFunction(evaluator.env, paramSexp, body);
 }));
 
 builtins.set('defmacro!', new ArrpSpecial((evaluator, sym, params, ...body) =>　{
@@ -167,8 +167,8 @@ builtins.set('delete-g!', new ArrpSpecial((evaluator, sym) =>　{
   return evaluator.env.deleteGlobal(sym);
 }));
 
-builtins.set('defun!', new ArrpSpecial((evaluator, sym, params, ...body) =>　{
-  return evaluator.env.setGlobal(sym, new ArrpFunction(evaluator.env, params, body));
+builtins.set('defun!', new ArrpSpecial((evaluator, sym, paramSexp, ...body) =>　{
+  return evaluator.env.setGlobal(sym, new ArrpFunction(evaluator.env, paramSexp, body));
 }));
 
 const randomNumeal = (digit) => {
