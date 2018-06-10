@@ -371,25 +371,56 @@ builtins.set('test', (regex, target) => regex.test(target));
 
 // Array
 builtins.set('array', (...vals) =>　Array.from(vals));
-
 builtins.set('nth', (arr, ind) =>　arr[ind]);
 builtins.set('replace-nth!', (arr, ind, val) =>　arr[ind] = val);
-
 builtins.set('first', (arr) =>　arr[0]);
 builtins.set('rest', (arr) =>　arr.slice(1));
 builtins.set('last', (arr) =>　arr[arr.length - 1]);
-
-builtins.set('copy-within!', (arr, ...args) => arr.copyWithin.apply(arr, args));
 builtins.set('fill!', (arr, ...args) => arr.fill.apply(arr, args));
 builtins.set('push!', (arr, ...vals) => arr.push.apply(arr, vals));
 builtins.set('pop!', (arr) => arr.pop());
 builtins.set('unshift!', (arr, ...vals) => arr.unshift.apply(arr, vals));
 builtins.set('shift!', (arr) => arr.shift());
+builtins.set('splice!', (arr, ...args) => arr.splice.apply(arr, args));
+
+// Typed Array
+const typedArray = {
+  'int-8-array': Int8Array,
+  'uint-8-array': Uint8Array,
+  'uint-8-clamped-array': Uint8ClampedArray,
+  'int-16-array': Int16Array,
+  'uint-16-array': Uint16Array,
+  'int-32-array': Int32Array,
+  'uint-32-array': Uint32Array,
+  'float-32-array': Float32Array,
+  'float-64-array': Float64Array,
+};
+
+for (let name in typedArray){
+  builtins.set(name, (...args) => {
+    if (args.length === 0) {
+      return new typedArray[name]();
+    } else if (args.length === 1) {
+      return new typedArray[name](args[0]);
+    } else if (args.length === 2) {
+      return new typedArray[name](args[0], args[1]);
+    } else if (args.length === 3) {
+      return new typedArray[name](args[0], args[1], args[2]);
+    }
+    throw Error('invalid argumens');
+  });
+}
+
+builtins.set('set-into', (arr, ...args) => arr.set.apply(arr, args));
+builtins.set('subarray', (arr, ...args) => arr.subarray.apply(arr, args));
+
+// for Array and TypedArray
+builtins.set('copy-within!', (arr, ...args) => arr.copyWithin.apply(arr, args));
 builtins.set('reverse!', (arr) => arr.reverse());
 builtins.set('sort!', (arr) => arr.sort()); // TODO
-builtins.set('splice!', (arr, ...args) => arr.splice.apply(arr, args));
 builtins.set('join', (arr, sep) =>　arr.join(sep));
 
+// Iteration Method for Array and TypedArray
 const makeIterationMethod = (name) => {
   return new ArrpSpecial((evaluator, arr, func, ...option) => {
     arr = evaluator.eval(arr);
@@ -442,8 +473,11 @@ builtins.set('to-locale-lower-case', (str, ...args) => str.toLocaleLowerCase.app
 builtins.set('to-locale-upper-case', (str, ...args) => str.toLocaleUpperCase.apply(str, args));
 builtins.set('trim', (str) => str.trim());
 
-// like Array: String, Array,
+// for String and Array,
 builtins.set('concat', (obj, ...arrs) =>　obj.concat.apply(obj, arrs));
+
+// for String and Array, Typed Array
+builtins.set('length', (obj) =>　obj.length);
 builtins.set('slice', (obj, ...args) =>　obj.slice.apply(obj, args));
 builtins.set('index-of', (obj, ...args) =>　obj.indexOf.apply(obj, args));
 builtins.set('last-index-of', (obj, ...args) =>　obj.lastIndexOf.apply(obj, args));
