@@ -473,6 +473,9 @@ builtins.set('to-locale-lower-case', (str, ...args) => str.toLocaleLowerCase.app
 builtins.set('to-locale-upper-case', (str, ...args) => str.toLocaleUpperCase.apply(str, args));
 builtins.set('trim', (str) => str.trim());
 
+// ArrayBuffer
+builtins.set('array-buffer', (length) => new ArrayBuffer(length));
+
 // for String and Array,
 builtins.set('concat', (obj, ...arrs) =>　obj.concat.apply(obj, arrs));
 
@@ -481,6 +484,38 @@ builtins.set('length', (obj) =>　obj.length);
 builtins.set('slice', (obj, ...args) =>　obj.slice.apply(obj, args));
 builtins.set('index-of', (obj, ...args) =>　obj.indexOf.apply(obj, args));
 builtins.set('last-index-of', (obj, ...args) =>　obj.lastIndexOf.apply(obj, args));
+
+// DataView
+builtins.set('data-view', (...args) => {
+  if (args.length === 0) {
+    return new DataView();
+  } else if (args.length === 1) {
+    return new DataView(args[0]);
+  } else if (args.length === 2) {
+    return new DataView(args[0], args[1]);
+  } else if (args.length === 3) {
+    return new DataView(args[0], args[1], args[2]);
+  }
+  throw Error('invalid argumens');
+});
+
+builtins.set('get-int-8', (dataview, ...args) =>　dataview.getInt8.apply(dataview, args));
+builtins.set('get-uint-8', (dataview, ...args) =>　dataview.getUint8.apply(dataview, args));
+builtins.set('get-int-16', (dataview, ...args) =>　dataview.getInt16.apply(dataview, args));
+builtins.set('get-uint-16', (dataview, ...args) =>　dataview.getUint16.apply(dataview, args));
+builtins.set('get-int-32', (dataview, ...args) =>　dataview.getInt32.apply(dataview, args));
+builtins.set('get-uint-32', (dataview, ...args) =>　dataview.getUint32.apply(dataview, args));
+builtins.set('get-float-32', (dataview, ...args) =>　dataview.getFloat32.apply(dataview, args));
+builtins.set('get-float-64', (dataview, ...args) =>　dataview.getFloat64.apply(dataview, args));
+
+builtins.set('set-int-8!', (dataview, ...args) =>　dataview.setInt8.apply(dataview, args));
+builtins.set('set-uint-8!', (dataview, ...args) =>　dataview.setUint8.apply(dataview, args));
+builtins.set('set-int-16!', (dataview, ...args) =>　dataview.setInt16.apply(dataview, args));
+builtins.set('set-uint-16!', (dataview, ...args) =>　dataview.setUint16.apply(dataview, args));
+builtins.set('set-int-32!', (dataview, ...args) =>　dataview.setInt32.apply(dataview, args));
+builtins.set('set-uint-32!', (dataview, ...args) =>　dataview.setUint32.apply(dataview, args));
+builtins.set('set-float-32!', (dataview, ...args) =>　dataview.setFloat32.apply(dataview, args));
+builtins.set('set-float-64!', (dataview, ...args) =>　dataview.setFloat64.apply(dataview, args));
 
 // JSON
 builtins.set('json-parse', (str) =>　JSON.parse(str)); // TODO
