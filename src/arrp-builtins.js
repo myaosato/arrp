@@ -13,6 +13,7 @@ const ArrpExpandedValues = require(__dirname + '/ArrpExpandedValues.js');
 const ReturnFromFunctionError = require(__dirname + '/ReturnFromFunctionError.js');
 
 const builtins = new Map();
+
 builtins.set('quote', new ArrpSpecial((evaluator, val) =>　{
   return val;
 }));
@@ -215,6 +216,15 @@ builtins.set('eval', new ArrpSpecial((evaluator, sexp) =>　{
 builtins.set('return', ((val) =>　{
   throw new ReturnFromFunctionError(val);
 }));
+
+// Package
+builtins.set('change-package!', new ArrpSpecial((evaluator, pkg) =>　{
+  return evaluator.env.changePkg(evaluator.eval(pkg).toUpperCase());
+}));
+builtins.set('current-package', new ArrpSpecial((evaluator) =>　{
+  return evaluator.env.getPkg();
+}));
+
 
 
 // URI

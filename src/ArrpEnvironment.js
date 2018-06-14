@@ -6,17 +6,37 @@ class ArrpEnvironment {
     this.globalEnv = globalEnv;
     this.lexicalEnv = new Map();
     this.lexicalEnvStack = [];
+    this.package = 'ARRP-USER';
+  }
+
+  changePkg (pkg) {
+      if (typeof pkg === 'string') this.package = pkg;
+      return this.package;
+  }
+
+  getPkg () {
+      return this.package;
+  }
+
+  __getKey(sym) {
+    if (sym.identifier.indexOf(':') === -1){
+      return this.package + ':' + sym.identifier;
+    } else {
+      let sepInd = sym.identifier.indexOf(':');
+      let key = sym.identifier.slice(0, sepInd).toUpperCase() + sym.identifier.slice(sepInd)
+      return key;
+    }
   }
 
   get (sym) {
-    let key = sym.identifier;
     if (this.lexicalEnvStack.length === 0) return this.getGlobal(sym);
+    let key = sym.identifier;
     if (this.lexicalEnv.has(key)) return this.lexicalEnv.get(key);
     return this.getGlobal(sym);
   }
 
   getGlobal (sym) {
-    let key = sym.identifier;
+    let key = this.__getKey(sym);
     if (this.globalEnv.has(key)) return this.globalEnv.get(key);
     return this.getBuiltin(sym);
   }
@@ -34,12 +54,12 @@ class ArrpEnvironment {
   }
 
   setGlobal (sym, val) {
-    this.globalEnv.set(sym.identifier, val);
+    this.globalEnv.set(this.__getKey(sym), val);
     return val;
   }
 
   deleteGlobal (sym) {
-    this.globalEnv.delete(sym.identifier);
+    this.globalEnv.delete(this.__getKey(sym));
     return sym;
   }
 
