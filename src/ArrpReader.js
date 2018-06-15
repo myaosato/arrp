@@ -66,16 +66,16 @@ class ArrpReader{
   __makeToken(input, pos) {
     let stack = [];
     while (true) {
-      stack.push(input[pos]);
+      stack.push(String.fromCodePoint(input.codePointAt(pos)));
       pos++;
-      if (input[pos] === undefined
-        || input[pos] === '('
-        || input[pos] === ')'
-        || input[pos] === ';'
-        || input[pos] === "'"
-        || input[pos] === '`'
-        || input[pos] === ','
-        || input[pos].match(/^\s/)) {
+      if (input.codePointAt(pos) === undefined
+        || String.fromCodePoint(input.codePointAt(pos)) === '('
+        || String.fromCodePoint(input.codePointAt(pos)) === ')'
+        || String.fromCodePoint(input.codePointAt(pos)) === ';'
+        || String.fromCodePoint(input.codePointAt(pos)) === "'"
+        || String.fromCodePoint(input.codePointAt(pos)) === '`'
+        || String.fromCodePoint(input.codePointAt(pos)) === ','
+        || String.fromCodePoint(input.codePointAt(pos)).match(/^\s/)) {
        return [this.__resolveLiteral(stack.join('')), pos, true];
       }
     }
@@ -84,14 +84,14 @@ class ArrpReader{
   __makeString(input, pos) {
     let stack = [];
     while (true) {
-      stack.push(input[pos]);
-      if (input[pos] === '\\') {
+      stack.push(String.fromCodePoint(input.codePointAt(pos)));
+      if (String.fromCodePoint(input.codePointAt(pos)) === '\\') {
         pos++;
-        stack.push(input[pos]);
+        stack.push(String.fromCodePoint(input.codePointAt(pos)));
       }
       pos++;
-      if (input[pos] === '"') {
-        stack.push(input[pos]);
+      if (String.fromCodePoint(input.codePointAt(pos)) === '"') {
+        stack.push(String.fromCodePoint(input.codePointAt(pos)));
         pos++;
         return [this.__resolveLiteral(stack.join('')), pos, true];
       }
@@ -104,8 +104,8 @@ class ArrpReader{
   __purgeComment(input, pos) {
     while (true) {
       pos++
-      if (input[pos] === '\n'
-      || input[pos] === undefined) {
+      if (input.codePointAt(pos) === undefined
+      || String.fromCodePoint(input.codePointAt(pos)) === '\n') {
         pos++;
         return ['', pos, null];
       }
@@ -116,18 +116,18 @@ class ArrpReader{
   }
 
   __getToken(input, pos) {
-    if (input[pos] === undefined) return [null, false, null];
-    if (input[pos] === "'") return ["'", pos + 1, "'"];
-    if (input[pos] === '`') return ['`', pos + 1, '`'];
-    if (input[pos] === ',') {
+    if (input.codePointAt(pos) === undefined) return [null, false, null];
+    if (String.fromCodePoint(input.codePointAt(pos)) === "'") return ["'", pos + 1, "'"];
+    if (String.fromCodePoint(input.codePointAt(pos)) === '`') return ['`', pos + 1, '`'];
+    if (String.fromCodePoint(input.codePointAt(pos)) === ',') {
       if (input[pos + 1] === '@') return [',@', pos + 2, `,@`];
       return [',', pos + 1, `,`];
     }
-    if (input[pos] === '(') return ['(', pos + 1, '('];
-    if (input[pos] === ')') return [')', pos + 1, ')'];
-    if (input[pos].match(/^\s/)) return ['', pos + 1, null];
-    if (input[pos] === ';') return this.__purgeComment(input, pos);
-    if (input[pos] === '"') return this.__makeString(input, pos);
+    if (String.fromCodePoint(input.codePointAt(pos)) === '(') return ['(', pos + 1, '('];
+    if (String.fromCodePoint(input.codePointAt(pos)) === ')') return [')', pos + 1, ')'];
+    if (String.fromCodePoint(input.codePointAt(pos)).match(/^\s/)) return ['', pos + 1, null];
+    if (String.fromCodePoint(input.codePointAt(pos)) === ';') return this.__purgeComment(input, pos);
+    if (String.fromCodePoint(input.codePointAt(pos)) === '"') return this.__makeString(input, pos);
     return this.__makeToken(input, pos);
   };
 
