@@ -471,7 +471,7 @@ builtins.set('char-at', (str, ind) => str.charAt(ind));
 builtins.set('char-code-at', (str, ind) => str.charCodeAt(ind));
 builtins.set('code-point-at', (str, pos) => str.codePointAt(pos));
 builtins.set('locale-compare', (str, ...args) => str.localeCompare.apply(str, args));
-builtins.set('str-normalize', (str, form) => str.localeCompare.normalize(str, form));
+builtins.set('str-normalize', (str, form) => str.normalize(form));
 builtins.set('starts-with', (str, ...args) => str.startsWith.apply(str, args));
 builtins.set('ends-with', (str, ...args) => str.endsWith.apply(str, args));
 builtins.set('match', (str, regexp) => str.match(regexp));
@@ -487,8 +487,8 @@ builtins.set('to-locale-upper-case', (str, ...args) => str.toLocaleUpperCase.app
 builtins.set('trim', (str) => str.trim());
 builtins.set('trim-end', (str) => str.trimEnd());
 builtins.set('trim-start', (str) => str.trimStart());
-builtins.set('pad-end', (str, ...args) => str.padEnd(args));
-builtins.set('pad-start', (str, ...args) => str.padStart(args));
+builtins.set('pad-end', (str, ...args) => str.padEnd.apply(str, args));
+builtins.set('pad-start', (str, ...args) => str.padStart.apply(str, args));
 builtins.set('repeat', (str, count) => str.repeat(count));
 
 // ArrayBuffer
