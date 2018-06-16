@@ -37,3 +37,4 @@
 (length "abc")
 (index-of "arrp" "r")
 (last-index-of "arrp" "r")
+(concat "ar" "rp")
