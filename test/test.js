@@ -58,6 +58,8 @@ const ae = new ArrpEval(env);
 const readEval = (str) => ae.evalFromStack((read(str)));
 //printFull(read('((lambda (x) (list x (list (quote quote) x))) (quote (lambda (x) (list x (list (quote quote) x))))'));
 //printFull(read('(+ 1 2 3 4 5 6 7 8 9 10)'));
+printFull(read('(split "cl,scheme,clojure,arrp" ",")'));
+printFull(read("hoge,piyo,fuga"));
 
 let f = readEval("(let ((q '(r s))) ``(,@,q))");
 printFull(f);
