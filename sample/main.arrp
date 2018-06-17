@@ -1,0 +1,40 @@
+(if true
+    42
+    41)
+(if false
+    42
+    41)
+(if undefined
+    42
+    41)
+(defun! foo (x)
+  (cond
+    ((= 0 x) 1)
+    ((= 1 x) 2)
+    (t 42)))
+(foo 0)
+(foo 1)
+(foo 2)
+(set-g! bar (lambda (a b) (+ a b)))
+(bar 2 3)
+(let ((x 0))
+  (defun! counter (num)
+    (if num
+        (set! x num)
+        (set! x (+ x 1)))))
+(defmacro! nibai (a)
+  (let ((b (gensym)))
+    `(let ((,b ,a))
+       (+ ,b ,b))))
+(defmacro! tashizan (a)
+  `(+ ,a ,a))
+(counter 0)
+(tashizan (counter false))
+(counter 0)
+(nibai (counter false))
+(progn
+  (set-g! baz 3)
+  (+ baz 2))
+baz
+(delete-g! baz)
+baz
