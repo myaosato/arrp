@@ -2,10 +2,11 @@
   "name": "arrp",
   "version": "0.1.0",
   "description": "a LISP like language on JavaScript",
-  "main": "arrp.js",
+  "main": "",
   "scripts": {
     "test": "node ./test/test.js",
-    "arrpi": "node ./test/arrpi.js"
+    "arrpi": "node ./arrpi.js",
+    "load": "node ./arrp-run.js"
   },
   "keywords": [
     "LISP"

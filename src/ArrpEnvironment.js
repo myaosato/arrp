@@ -1,7 +1,7 @@
 'use strict';
 const builtins = require(__dirname + '/arrp-builtins.js');
 class ArrpEnvironment {
-  constructor (...optionalBuiltins) {
+  constructor (optionalBuiltins) {
     this.__builtins = builtins;
     optionalBuiltins.forEach((map) => {
       map.forEach((val, key) => {
