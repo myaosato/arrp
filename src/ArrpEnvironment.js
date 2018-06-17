@@ -1,9 +1,14 @@
 'use strict';
 const builtins = require(__dirname + '/arrp-builtins.js');
 class ArrpEnvironment {
-  constructor (globalEnv) {
+  constructor (...optionalBuiltins) {
     this.__builtins = builtins;
-    this.globalEnv = globalEnv;
+    optionalBuiltins.forEach((map) => {
+      map.forEach((val, key) => {
+        this.__builtins.set(key, val);
+      });
+    });
+    this.globalEnv = new Map();
     this.lexicalEnv = new Map();
     this.lexicalEnvStack = [];
     this.package = 'ARRP-USER';

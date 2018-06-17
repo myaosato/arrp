@@ -4,7 +4,7 @@ const ArrpEval = require(__dirname + '/../src/ArrpEvaluator.js');
 const ArrpReader = require(__dirname + '/../src/ArrpReader.js');
 const arrpPrint = require(__dirname + '/../src/arrp-print.js');
 let ar = new ArrpReader();
-const ae = new ArrpEval(new ArrpEnvironment(new Map()));
+const ae = new ArrpEval(new ArrpEnvironment());
 
 const reader = require('readline').createInterface({
   input: process.stdin,

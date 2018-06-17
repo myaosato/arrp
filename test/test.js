@@ -51,7 +51,7 @@ const ar = new ArrpReader();
 const read = (str) => ar.read(str);
 
 const ArrpEnvironment = require(__dirname + '/../src/ArrpEnvironment.js');
-const env = new ArrpEnvironment(new Map());
+const env = new ArrpEnvironment();
 
 const ArrpEval = require(__dirname + '/../src/ArrpEvaluator.js');
 const ae = new ArrpEval(env);

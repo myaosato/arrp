@@ -52,14 +52,14 @@ class ArrpEvaluator{
     return sexp;
   }
 
-  evalFromStack(sexps, multiple) {
+  evalFromStack(sexps) {
     try {
       if (sexps.stack.length === 0) return '#<No Input>'; //TODO
       let tmp = undefined; // TODO
       while (true) {
         let sexp = sexps.dequeue();
         if (sexp === undefined) break;
-        tmp = this.eval(sexp, multiple);
+        tmp = this.eval(sexp);
       }
       return tmp;
     } catch (error) {
