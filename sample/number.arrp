@@ -8,3 +8,17 @@
 +4.2e1
 -42.0e0
 +4200e-2
++EPSILON+
++MAX-SAFE-INTEGER+
++MIN-SAFE-INTEGER+
++MAX-VALUE+
++MIN-VALUE+
+(is-NaN NaN)
+(is-finite 42)
+(is-integer 42.0)
+(is-safe-nteger 0)
+(parse-float "42.0")
+(parse-int "42")
+(to-exponential 42 3)
+(to-fixed 42 1)
+(to-precision 42 4)
