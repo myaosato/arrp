@@ -4,6 +4,8 @@ const ArrpComma = require(__dirname + '/ArrpComma.js');
 const ArrpCommaAt = require(__dirname + '/ArrpCommaAt.js');
 const ArrpReader = require(__dirname + '/ArrpReader.js');
 
+const arrpPrint = require(__dirname + '/arrp-print.js');
+
 const ArrpMacro = require(__dirname + '/ArrpMacro.js');
 const ArrpFunction = require(__dirname + '/ArrpFunction.js');
 const ArrpSpecial = require(__dirname + '/ArrpSpecial.js');
@@ -206,6 +208,9 @@ builtins.set('read', new ArrpSpecial((evaluator, str) =>　{
   let stackOrNull = (new ArrpReader()).read(str, true);
   return stackOrNull? stackOrNull.dequeue(): null;
 }));
+
+// Print
+builtins.set('print', arrpPrint);
 
 // Eval
 builtins.set('eval', new ArrpSpecial((evaluator, sexp) =>　{

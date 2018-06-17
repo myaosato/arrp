@@ -1,16 +1,13 @@
 'use strict';
 const ArrpExpandedValues = require(__dirname + '/ArrpExpandedValues.js');
-
+const arrpPrint = require(__dirname + '/arrp-print.js');
 class ArrpComma {
   constructor(sexp) {
     this.sexp = sexp;
   }
 
   toString() {
-    if (this.sexp instanceof Array) {
-      return ',[' + this.sexp.join(', ') + ']'; // TODO
-    }
-    return ',' + String(this.sexp); // TODO
+    return ',' + arrpPrint(this.sexp);
   }
   inspect() {
     return this.toString();

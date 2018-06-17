@@ -61,7 +61,7 @@ const readEval = (str) => ae.evalFromStack((read(str)));
 printFull(read('(split "cl,scheme,clojure,arrp" ",")'));
 printFull(read("hoge,piyo,fuga"));
 
-let f = readEval("(let ((q '(r s))) ``(,@,q))");
+let f = readEval("(let ((q '(r s))) ``(',,q))");
 printFull(f);
 
 console.log(readEval(`

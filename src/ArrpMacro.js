@@ -19,6 +19,13 @@ class ArrpMacro extends ArrpCallable{
     return result;
   }
 
+  toString() {
+    return '#<Arrp Macro>';
+  }
+
+  inspect() {
+    return this.toString();
+  }
 
 }
 

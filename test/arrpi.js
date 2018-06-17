@@ -2,7 +2,7 @@ const ArrpEnvironment = require(__dirname + '/../src/ArrpEnvironment.js');
 const ArrpSymbol = require(__dirname + '/../src/ArrpSymbol.js');
 const ArrpEval = require(__dirname + '/../src/ArrpEvaluator.js');
 const ArrpReader = require(__dirname + '/../src/ArrpReader.js');
-
+const arrpPrint = require(__dirname + '/../src/arrp-print.js');
 let ar = new ArrpReader();
 const ae = new ArrpEval(new ArrpEnvironment(new Map()));
 
@@ -20,7 +20,7 @@ reader.on('line', function(line) {
   try {
     let stackOrNull = ar.read(line);
     if (stackOrNull) {
-      console.log(ae.evalFromStack(stackOrNull, true));
+      console.log(arrpPrint(ae.evalFromStack(stackOrNull, true)));
       reader.setPrompt(prompt, prompt.length);
     } else {
       reader.setPrompt(wait, wait.length);

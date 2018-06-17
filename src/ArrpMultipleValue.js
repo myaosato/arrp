@@ -1,4 +1,5 @@
 'use strict';
+const arrpPrint = require(__dirname + '/arrp-print.js');
 class ArrpMultipleValue {
   constructor(...values) {
     this.values = values;
@@ -9,7 +10,7 @@ class ArrpMultipleValue {
   }
 
   toString() {
-    return this.values.map((elt) => String(elt)).join('\n');
+    return this.values.map((elt) => arrpPrint(elt)).join('\n');
   }
 
   inspect() {
