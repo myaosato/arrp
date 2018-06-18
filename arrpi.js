@@ -5,11 +5,12 @@ const reader = require('readline').createInterface({
   output: process.stdout
 });
 
+const arrpNodeBuiltins = require(__dirname + '/src/arrp-node-builtins.js');
 const arrpiBuiltins = new Map();
 
 arrpiBuiltins.set('exit', () => {reader.close();process.exit();});
 
-const arrp = new ARRP(arrpiBuiltins);
+const arrp = new ARRP(arrpNodeBuiltins, arrpiBuiltins);
 
 const prompt = () =>  arrp.getPkg() + '> ';
 

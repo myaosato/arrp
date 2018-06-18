@@ -1,0 +1,1 @@
+(print-s (read-file "./arrpi.js" "utf-8"))
