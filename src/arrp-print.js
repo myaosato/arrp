@@ -7,6 +7,8 @@ let arrpPrint = (sexp) => {
       if (sexp[0].identifier === 'quasi-quote') return "`" + arrpPrint(sexp[1]);
     }
     return "(" + sexp.map((elt) => arrpPrint(elt)).join(' ') + ")";
+  } else if (typeof sexp === 'string'){
+    return JSON.stringify(sexp);
   } else if (!(sexp instanceof Object)){
     return String(sexp);
   } else {
