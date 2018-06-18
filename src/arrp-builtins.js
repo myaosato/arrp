@@ -540,14 +540,24 @@ builtins.set('set-uint-32!', (dataview, ...args) =>　dataview.setUint32.apply(d
 builtins.set('set-float-32!', (dataview, ...args) =>　dataview.setFloat32.apply(dataview, args));
 builtins.set('set-float-64!', (dataview, ...args) =>　dataview.setFloat64.apply(dataview, args));
 
-// MAP
+// Map
 builtins.set('make-map', (arg) => new Map(arg));
-builtins.set('map-size', (map) => map.size);
-builtins.set('map-clear!', (map) => map.clear());
+builtins.set('clear-map!', (map) => map.clear());
 builtins.set('delete-value!', (map, key) => map.delete(key));
 builtins.set('get-value', (map, key) => map.get(key));
 builtins.set('has-key', (map, key) => map.has(key));
 builtins.set('set-value!', (map, key, value) => map.set(key, value));
+
+// Set
+builtins.set('make-set', (arg) => new Set(arg));
+builtins.set('add-member!', (set, val) => set.add(val));
+builtins.set('clear-set!', (set) => set.clear());
+builtins.set('delete-member!', (set, value) => set.delete(value));
+builtins.set('has-member', (set, value) => set.has(value));
+
+// size of Map, Set
+builtins.set('size-of', (mapOrSet) => mapOrSet.size);
+
 
 // JSON
 builtins.set('json-parse', (str) =>　JSON.parse(str)); // TODO
