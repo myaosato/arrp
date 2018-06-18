@@ -563,7 +563,20 @@ builtins.set('size-of', (mapOrSet) => mapOrSet.size);
 builtins.set('json-parse', (str) =>　JSON.parse(str)); // TODO
 builtins.set('json-stringify', (val) =>　JSON.stringify(val)); //TODO
 
+// Intl
+builtins.set('intl-collator', (...args) => Intl.Collator.apply(null,args));
+builtins.set('intl-collator-supported-locales-of', (...args) => Intl.Collator.supportedLocalesOf.apply(null,args));
+builtins.set('compare', (col, ...args) => col.compare.apply(col, args));
 
+builtins.set('intl-datetime-format', (...args) => Intl.DateTimeFormat.apply(null,args));
+builtins.set('intl-datetime-format-supported-locales-of', (...args) => Intl.DateTimeFormat.supportedLocalesOf.apply(null,args));
+builtins.set('format-to-parts', (intldtf, ...args) => intldtf.formatToParts.apply(null,args));
+
+builtins.set('intl-number-format', (...args) => Intl.NumberFormat.apply(null,args));
+builtins.set('intl-number-format-supported-locales-of', (...args) => Intl.NumberFormat.supportedLocalesOf.apply(null,args));
+
+builtins.set('intl-format', (intldtnf, ...args) => intldtnf.format.apply(intldtnf, args)); // DateTime and Number
+builtins.set('resolved-options', (intl) => intl.resolvedOptions());
 
 // EXPORTS
 module.exports = builtins;
