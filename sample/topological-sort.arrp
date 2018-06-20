@@ -1,0 +1,38 @@
+
+(set-g! +sample-dag+ 
+  '(("a" ("c" "e"))
+    ("b" ("a" "g"))
+    ("c" ())
+    ("d" ("a"))
+    ("e" ())
+    ("f" ())
+    ("g" ("c" "f"))
+    ("h" ("a" "f"))))
+
+(defun! find-top (dag)
+  (find-index dag (lambda (elt) (= (length (nth elt 1)) 0))))
+
+(defun! remove (arr target)
+  (filter arr (lambda (elt ind) (/= elt target))))
+
+(defun! remove-at (arr target)
+  (filter arr (lambda (elt ind) (/= ind target))))
+
+(defun! remove-edge (dag from)
+  (reduce dag 
+          (lambda (acc cur)
+            (push! acc 
+                  (array (nth cur 0)
+                         (remove (nth cur 1) from)))
+            acc)
+          (array)))
+
+(defun! tsort (dag sorted)
+  (if (= (length dag) 0) (return sorted))
+  (let ((top-ind (find-top dag)))
+    (if (= top -1) (return undefiend))
+    (let ((top (nth dag top-ind)))
+      (push! sorted (nth top 0))
+      (tsort (remove-edge (remove-at dag top-ind) (first top)) sorted))))
+
+(print-s (tsort +sample-dag+ (array)))

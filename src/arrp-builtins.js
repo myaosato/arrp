@@ -270,6 +270,12 @@ builtins.set('<', compare((top, num) => top >= num));
 builtins.set('>=', compare((top, num) => top < num));
 builtins.set('<=', compare((top, num) => top > num));
 
+builtins.set('/=', (...number) => {
+  if (number.length === 0) return true;
+  let uniq = number.filter((elt, ind, arr) => arr.indexOf(elt) === ind);
+  return uniq.length === number.length;
+});
+
 // Arithemetic　
 builtins.set('+', (...numbers) =>　numbers.reduce((prev, curr) => prev + curr));
 builtins.set('-', (top, ...numbers) => numbers.length === 0? - top: top - numbers.reduce((prev, curr) => prev + curr));
@@ -467,7 +473,7 @@ bindIterationWithPredicateMethod('every', 'every');
 bindIterationWithPredicateMethod('some', 'some');
 bindIterationWithPredicateMethod('filter', 'filter');
 bindIterationWithPredicateMethod('find', 'find');
-bindIterationWithPredicateMethod('find-index', 'find-index');
+bindIterationWithPredicateMethod('find-index', 'findIndex');
 
 // String TODO
 builtins.set('from-char-code', String.fromCharCode);
