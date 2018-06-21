@@ -1,7 +1,9 @@
 (defmacro! -> (prev &rest remained)
   (if (= (length remained) 0)
       prev
-      `(-> ,(concat (array (first (first remained))) (concat (array prev) (rest (first remained)))) ,@(rest remained))))
+      `(-> ,(concat (array (first (first remained)))
+                    (concat (array prev) (rest (first remained))))
+           ,@(rest remained))))
 
 (-> (+ 1 2)
     (+ 3)
