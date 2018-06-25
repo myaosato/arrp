@@ -4,7 +4,10 @@ const ArrpComma = require(__dirname + '/ArrpComma.js');
 const ArrpFunction = require(__dirname + '/ArrpFunction.js');
 const ArrpMacro = require(__dirname + '/ArrpMacro.js');
 const ArrpSpecial = require(__dirname + '/ArrpSpecial.js');
+const ArrpJsMethod = require(__dirname + '/ArrpJsMethod.js');
+
 const ArrpMultipleValue = require(__dirname + '/ArrpMultipleValue.js');
+
 
 class ArrpEvaluator{
   constructor(env) {
@@ -21,6 +24,9 @@ class ArrpEvaluator{
   call(op, args) {
     if (op instanceof Function) {
       return op.apply(null, args.map((arg) => this.__getSingleValue(this.eval(arg))));
+    } else if (op instanceof ArrpJsMethod) {
+      let a = args.map((arg) => this.__getSingleValue(this.eval(arg)));
+      return a[0][op.identifier].apply(a[0], a.slice(1));
     } else if (op instanceof ArrpSpecial) {
       return op.call(this, args);
     } else if (op instanceof ArrpFunction) {
