@@ -74,24 +74,32 @@ class ArrpEvaluator{
   }
 
   eval(sexp) {
-    if (typeof sexp === 'string' || typeof sexp === 'number') {
-      return sexp;
-    } else if (sexp === undefined || sexp === null) {
-      return sexp;
-    } else if (sexp instanceof Boolean) {
-      return sexp;
-    } else if (sexp === Infinity) {
-      return sexp;
-    } else if (sexp instanceof ArrpSymbol) {
-      return this.env.get(sexp);
-    } else if (sexp instanceof Array) {
-      if (sexp.length === 0) {
+    try {
+      if (typeof sexp === 'string' || typeof sexp === 'number') {
         return sexp;
-      } else {
-        return this.call(this.eval(sexp[0]), sexp.slice(1));
+      } else if (sexp === undefined || sexp === null) {
+        return sexp;
+      } else if (sexp instanceof Boolean) {
+        return sexp;
+      } else if (sexp === Infinity) {
+        return sexp;
+      } else if (sexp instanceof ArrpSymbol) {
+        return this.env.get(sexp);
+      } else if (sexp instanceof Array) {
+        if (sexp.length === 0) {
+          return sexp;
+        } else {
+          return this.call(this.eval(sexp[0]), sexp.slice(1));
+        }
       }
+      return sexp;
+    } catch (error) {
+      let len = this.env.lexicalEnvsStack.length;
+      for (let count = 0; count < len; count++) {
+        this.env.exit();
+      }
+      throw error;
     }
-    return sexp;
   }
 
   evalFromStack(sexps) {
