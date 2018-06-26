@@ -5,7 +5,7 @@ const ArrpFunction = require(__dirname + '/ArrpFunction.js');
 const ArrpMacro = require(__dirname + '/ArrpMacro.js');
 const ArrpSpecial = require(__dirname + '/ArrpSpecial.js');
 const ArrpJsMethod = require(__dirname + '/ArrpJsMethod.js');
-
+const ReturnFromFunctionError = require(__dirname + '/ReturnFromFunctionError.js');
 const ArrpMultipleValue = require(__dirname + '/ArrpMultipleValue.js');
 
 
@@ -14,6 +14,8 @@ class ArrpEvaluator{
       this.env = env;
       this.quasiQuoteCounter = 0;
       this.commaCounter = 0;
+      this.envsForTco = null;
+      this.sexpForTco = null;
   }
 
   __getSingleValue(val){
@@ -22,19 +24,53 @@ class ArrpEvaluator{
   }
 
   call(op, args) {
-    if (op instanceof Function) {
-      return op.apply(null, args.map((arg) => this.__getSingleValue(this.eval(arg))));
-    } else if (op instanceof ArrpJsMethod) {
-      let a = args.map((arg) => this.__getSingleValue(this.eval(arg)));
-      return a[0][op.identifier].apply(a[0], a.slice(1));
-    } else if (op instanceof ArrpSpecial) {
-      return op.call(this, args);
-    } else if (op instanceof ArrpFunction) {
-      return op.call(this, args.map((arg) => this.__getSingleValue(this.eval(arg))));
-    } else if (op instanceof ArrpMacro) {
-      return this.eval(op.expand(this, args));
+    while (true) {
+      if (op instanceof Function) {
+        return op.apply(null, args.map((arg) => this.__getSingleValue(this.eval(arg))));
+      } else if (op instanceof ArrpJsMethod) {
+        let a = args.map((arg) => this.__getSingleValue(this.eval(arg)));
+        return a[0][op.identifier].apply(a[0], a.slice(1));
+      } else if (op instanceof ArrpSpecial) {
+        return op.call(this, args);
+      } else if (op instanceof ArrpFunction) {
+        try {
+          if (this.envsForTco === null) {
+            return op.call(this, args.map((arg) => this.__getSingleValue(this.eval(arg))));
+          } else {
+            this.env.enter(this.envsForTco);
+            try {
+              args = this.sexpForTco.slice(1);
+              return op.call(this, args.map((arg) => this.__getSingleValue(this.eval(arg))));
+            } finally {
+              this.env.exit();
+              this.sexpForTco = null;
+              this.envsForTco = null;
+            }
+          }
+        } catch (error) {
+          if (error instanceof ReturnFromFunctionError){
+            if (error.sexp instanceof Array && error.sexp.length > 0){
+              this.env.enter(error.envs);
+              try {
+                op = this.eval(error.sexp[0]);
+              } finally {
+                this.env.exit();
+              }
+              this.sexpForTco = error.sexp;
+              this.envsForTco = error.envs;
+              continue;
+            } else {
+              return this.eval(error.sexp);
+            }
+          }
+          throw error;
+        }
+      } else if (op instanceof ArrpMacro) {
+        return this.eval(op.expand(this, args));
+      } else {
+        return null; // TODO Error
+      }
     }
-    return null; // TODO Error
   }
 
   eval(sexp) {

@@ -17,9 +17,6 @@ class ArrpFunction extends ArrpCallable{
     try {
       this.bind(evaluator.env, args);
       return evaluator.eval(this.body);
-    } catch (error) {
-      if (error instanceof ReturnFromFunctionError) return error.val;
-      throw error;
     } finally {
       evaluator.env.exit();
     }

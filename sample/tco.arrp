@@ -1,0 +1,11 @@
+(defun! no-tco (n)
+  (if (= n 1) (return 1))
+  (no-tco (- n 1)))
+
+(defun! tco (n)
+  (if (= n 1) (return 1))
+  (return (tco (- n 1))))
+
+
+(no-tco 800)
+(tco 80000)

@@ -1,8 +1,9 @@
 'use strict';
 class ReturnFromFunctionError extends Error {
-  constructor(val){
+  constructor(sexp, envs){
     super('return with value');
-    this.val = val;
+    this.sexp = sexp;
+    this.envs = envs;
   }
 }
 module.exports = ReturnFromFunctionError;

@@ -219,8 +219,9 @@ builtins.set('eval', new ArrpSpecial((evaluator, sexp) =>　{
 }));
 
 // Return
-builtins.set('return', ((val) =>　{
-  throw new ReturnFromFunctionError(val);
+builtins.set('return', new ArrpSpecial((evaluator, sexp) =>　{
+  throw new ReturnFromFunctionError(sexp, evaluator.env.getLexicalEnvs());
+
 }));
 
 // Package
