@@ -6,26 +6,23 @@ const ReturnFromFunctionError = require(__dirname + '/ReturnFromFunctionError.js
 class ArrpFunction extends ArrpCallable{
   constructor (env, paramSexp, body) {
     super();
-    this.env = env.getLexicalEnvs();
+    this.envs = env.getLexicalEnvs();
     this.params = this.__setParams(paramSexp);
     body.unshift(ArrpSymbol.make('progn'));
     this.body = body;
   }
 
   call(evaluator, args) {
-    evaluator.env.enter(this.env);
-    this.bind(evaluator.env, args);
-    let result;
+    evaluator.env.enter(this.envs);
     try {
-      result = evaluator.eval(this.body);
-      evaluator.env.exit();
+      this.bind(evaluator.env, args);
+      return evaluator.eval(this.body);
     } catch (error) {
-      if (error instanceof ReturnFromFunctionError) {
-        return error.val;
-      }
+      if (error instanceof ReturnFromFunctionError) return error.val;
       throw error;
+    } finally {
+      evaluator.env.exit();
     }
-    return result;
   }
 
   toString() {

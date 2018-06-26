@@ -14,6 +14,7 @@ class ArrpEnvironment {
     this.package = 'ARRP-USER';
   }
 
+  // package
   changePkg (pkg) {
       if (typeof pkg === 'string') this.package = pkg;
       return this.package;
@@ -33,14 +34,15 @@ class ArrpEnvironment {
     }
   }
 
+  // access (get)
   get (sym) {
     if (this.lexicalEnvsStack.length === 0) return this.getGlobal(sym);
-    let key = sym.identifier;
-    if (this.hasLex(key)) return this.getLex(key);
+    if (this.hasLex(sym)) return this.getLex(sym);
     return this.getGlobal(sym);
   }
 
-  hasLex(key) {
+  hasLex(sym) {
+    let key = sym.identifier;
     let len = this.lexicalEnvs.length;
     for (let ind = len - 1; ind >= 0; ind--){
       if (this.lexicalEnvs[ind].has(key)) return true;
@@ -48,7 +50,8 @@ class ArrpEnvironment {
     return false;
   }
 
-  getLex(key) {
+  getLex(sym) {
+    let key = sym.identifier;
     let len = this.lexicalEnvs.length;
     for (let ind = len - 1; ind >= 0; ind--){
       if (this.lexicalEnvs[ind].has(key)) return this.lexicalEnvs[ind].get(key);
@@ -66,16 +69,18 @@ class ArrpEnvironment {
   getBuiltin (sym) {
     let key = sym.identifier;
     if (this.__builtins.has(key)) return this.__builtins.get(key);
-    return null; // TODO Error
+    return undefined;
   }
 
+
+  // access (set)
   set (sym, val) {
     if (this.lexicalEnvsStack.length === 0 || this.lexicalEnvs.length === 0) return this.setGlobal(sym, val);
-    this.setLex(sym.identifier, val);
-    return val;
+    return this.setLex(sym, val);
   }
 
-  setLex(key, val) {
+  setLex(sym, val) {
+    let key = sym.identifier;
     let len = this.lexicalEnvs.length;
     for (let ind = len - 1; ind >= 0; ind--){
       if (this.lexicalEnvs[ind].has(key)) {
@@ -98,16 +103,17 @@ class ArrpEnvironment {
     return sym;
   }
 
-
-  enter(env) {
+  // scope
+  enter(envs) {
     this.lexicalEnvsStack.push(this.lexicalEnvs);
-    this.lexicalEnvs = env.slice();
+    this.lexicalEnvs = envs.slice(); // Shallow copy for not modifying property of ArrpFunction.
   }
 
   exit() {
       this.lexicalEnvs = this.lexicalEnvsStack.pop();
   }
 
+  // getter
   getLexicalEnvs() {
     return this.lexicalEnvs;
   }
