@@ -6,7 +6,7 @@ const ReturnFromFunctionError = require(__dirname + '/ReturnFromFunctionError.js
 class ArrpFunction extends ArrpCallable{
   constructor (env, paramSexp, body) {
     super();
-    this.env = env.getLexialEnv();
+    this.env = env.getLexicalEnvs();
     this.params = this.__setParams(paramSexp);
     body.unshift(ArrpSymbol.make('progn'));
     this.body = body;

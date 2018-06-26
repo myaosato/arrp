@@ -1,0 +1,11 @@
+(defun! fib (n)
+  (cond ((= n 1)
+         1)
+        ((= n 2)
+         1)
+        (true (+ (fib (- n 1)) 
+                 (fib (- n 2))))))
+
+(for-each (array 1 2 3 4 5) (lambda (n) (print-s (fib n))))
+
+

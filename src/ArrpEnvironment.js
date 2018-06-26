@@ -9,8 +9,8 @@ class ArrpEnvironment {
       });
     });
     this.globalEnv = new Map();
-    this.lexicalEnv = new Map();
-    this.lexicalEnvStack = [];
+    this.lexicalEnvs = [];
+    this.lexicalEnvsStack = [];
     this.package = 'ARRP-USER';
   }
 
@@ -34,11 +34,28 @@ class ArrpEnvironment {
   }
 
   get (sym) {
-    if (this.lexicalEnvStack.length === 0) return this.getGlobal(sym);
+    if (this.lexicalEnvsStack.length === 0) return this.getGlobal(sym);
     let key = sym.identifier;
-    if (this.lexicalEnv.has(key)) return this.lexicalEnv.get(key);
+    if (this.hasLex(key)) return this.getLex(key);
     return this.getGlobal(sym);
   }
+
+  hasLex(key) {
+    let len = this.lexicalEnvs.length;
+    for (let ind = len - 1; ind >= 0; ind--){
+      if (this.lexicalEnvs[ind].has(key)) return true;
+    }
+    return false;
+  }
+
+  getLex(key) {
+    let len = this.lexicalEnvs.length;
+    for (let ind = len - 1; ind >= 0; ind--){
+      if (this.lexicalEnvs[ind].has(key)) return this.lexicalEnvs[ind].get(key);
+    }
+    return undefined;
+  }
+
 
   getGlobal (sym) {
     let key = this.__getKey(sym);
@@ -53,10 +70,23 @@ class ArrpEnvironment {
   }
 
   set (sym, val) {
-    if (this.lexicalEnvStack.length === 0) return this.setGlobal(sym, val);
-    this.lexicalEnv.set(sym.identifier, val);
+    if (this.lexicalEnvsStack.length === 0 || this.lexicalEnvs.length === 0) return this.setGlobal(sym, val);
+    this.setLex(sym.identifier, val);
     return val;
   }
+
+  setLex(key, val) {
+    let len = this.lexicalEnvs.length;
+    for (let ind = len - 1; ind >= 0; ind--){
+      if (this.lexicalEnvs[ind].has(key)) {
+        this.lexicalEnvs[ind].set(key, val);
+        return val;
+      }
+    }
+    this.lexicalEnvs[len - 1].set(key, val);
+    return val;
+  }
+
 
   setGlobal (sym, val) {
     this.globalEnv.set(this.__getKey(sym), val);
@@ -70,21 +100,16 @@ class ArrpEnvironment {
 
 
   enter(env) {
-    this.lexicalEnvStack.push(this.lexicalEnv);
-    this.lexicalEnv = env;
+    this.lexicalEnvsStack.push(this.lexicalEnvs);
+    this.lexicalEnvs = env.slice();
   }
 
   exit() {
-    if(this.lexicalEnvStack.length === 1) {
-      this.lexicalEnv = new Map();
-      this.lexicalEnvStack.pop();
-    } else {
-      this.lexicalEnv = this.lexicalEnvStack.pop();
-    }
+      this.lexicalEnvs = this.lexicalEnvsStack.pop();
   }
 
-  getLexialEnv() {
-    return this.lexicalEnv;
+  getLexicalEnvs() {
+    return this.lexicalEnvs;
   }
 
 }

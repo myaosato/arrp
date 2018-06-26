@@ -5,7 +5,7 @@ const ArrpCallable = require(__dirname + '/ArrpCallable.js');
 class ArrpMacro extends ArrpCallable{
   constructor (env, paramSexp, body) {
     super();
-    this.env = env.getLexialEnv();
+    this.env = env.getLexicalEnvs();
     this.params = this.__setParams(paramSexp);
     body.unshift(ArrpSymbol.make('progn'));
     this.body = body;

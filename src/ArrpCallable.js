@@ -23,19 +23,22 @@ class ArrpCallable {
   }
 
   bind (env, args) {
+    let innerEnv = new Map();
     let argInd = 0;
     for (let ind in this.params) {
       let param = this.params[ind];
       if (param instanceof ArrpSymbol && param.identifier === '&rest') {
-        env.set(this.params[Number(ind) + 1], args.slice(argInd));
+        innerEnv.set(this.params[Number(ind) + 1].identifier, args.slice(argInd));
+        env.lexicalEnvs.push(innerEnv);
         return;
       } else if (param instanceof ArrpSymbol){
-        env.set(param, args[argInd]);
+        innerEnv.set(param.identifier, args[argInd]);
         argInd++;
       }
     }
+    env.lexicalEnvs.push(innerEnv);
   }
-  
+
 }
 
 module.exports = ArrpCallable;
