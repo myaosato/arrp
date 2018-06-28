@@ -226,7 +226,18 @@ builtins.set('return', new ArrpSpecial((evaluator, sexp) =>　{
 
 // Package
 builtins.set('change-package!', new ArrpSpecial((evaluator, pkg) =>　{
-  return evaluator.env.changePkg(evaluator.eval(pkg).toUpperCase());
+  let name = 'ARRP-USER';
+  if (pkg instanceof ArrpSymbol) {
+    name = pkg.identifier;
+  } else if (typeof pkg === 'string') {
+    name = pkg;
+  } else {
+    return 'package must be specified by string or symbol';
+  }
+  if (name.toUpperCase() === 'JS') {
+    return 'can not change to JS package.';
+  }
+  return evaluator.env.changePkg(name.toUpperCase());
 }));
 builtins.set('current-package', new ArrpSpecial((evaluator) =>　{
   return evaluator.env.getPkg();
