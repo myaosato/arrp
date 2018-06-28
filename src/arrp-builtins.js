@@ -232,8 +232,6 @@ builtins.set('current-package', new ArrpSpecial((evaluator) =>　{
   return evaluator.env.getPkg();
 }));
 
-
-
 // URI
 builtins.set('decode-uri', decodeURI)
 builtins.set('encode-uri', encodeURI)
@@ -398,6 +396,7 @@ builtins.set('nth', (arr, ind) =>　arr[ind]);
 builtins.set('replace-nth!', (arr, ind, val) =>　arr[ind] = val);
 builtins.set('first', (arr) =>　arr[0]);
 builtins.set('rest', (arr) =>　arr.slice(1));
+builtins.set('cons', (first, rest) =>　([first]).concat(rest));
 builtins.set('last', (arr) =>　arr[arr.length - 1]);
 builtins.set('fill!', (arr, ...args) => arr.fill.apply(arr, args));
 builtins.set('push!', (arr, ...vals) => arr.push.apply(arr, vals));
