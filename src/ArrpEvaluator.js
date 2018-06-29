@@ -84,6 +84,9 @@ class ArrpEvaluator{
       } else if (sexp === Infinity) {
         return sexp;
       } else if (sexp instanceof ArrpSymbol) {
+        if ((new RegExp(/^js:/, 'i')).test(sexp.identifier)) {
+          return new ArrpJsMethod(sexp.identifier.slice(3));
+        }
         return this.env.get(sexp);
       } else if (sexp instanceof Array) {
         if (sexp.length === 0) {

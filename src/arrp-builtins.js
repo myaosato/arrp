@@ -243,6 +243,11 @@ builtins.set('current-package', new ArrpSpecial((evaluator) =>　{
   return evaluator.env.getPkg();
 }));
 
+// JS Method
+builtins.set('jsm', new ArrpSpecial((evaluator, id) =>　{
+  return new ArrpJsMethod(id);
+}));
+
 // URI
 builtins.set('decode-uri', decodeURI)
 builtins.set('encode-uri', encodeURI)
@@ -298,6 +303,7 @@ builtins.set('rem', (num1, num2) => new ArrpMultipleValue(Math.floor(num1 / num2
 // Object TODO
 builtins.set('new-object', () => {return {};});
 builtins.set('get-prop', (obj, prop) => obj[prop]);
+builtins.set('.', (obj, prop) => obj[prop]);
 builtins.set('set-prop!', (obj, prop, val) => obj[prop] = val);
 
 // Math
