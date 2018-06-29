@@ -221,7 +221,6 @@ builtins.set('eval', new ArrpSpecial((evaluator, sexp) =>　{
 // Return
 builtins.set('return', new ArrpSpecial((evaluator, sexp) =>　{
   throw new ReturnFromFunctionError(sexp, evaluator.env.getLexicalEnvs());
-
 }));
 
 // Package
@@ -303,7 +302,19 @@ builtins.set('rem', (num1, num2) => new ArrpMultipleValue(Math.floor(num1 / num2
 // Object TODO
 builtins.set('new-object', () => {return {};});
 builtins.set('get-prop', (obj, prop) => obj[prop]);
-builtins.set('.', (obj, prop) => obj[prop]);
+builtins.set('.', new ArrpSpecial((evaluator, obj, prop) =>　{
+  let propName = '';
+  if (prop instanceof ArrpSymbol) {
+    propName = prop.identifier;
+  } else if (typeof prop === 'string') {
+    propName = prop;
+  } else if (typeof prop === 'number') {
+    propName = prop;
+  } else {
+    return null;
+  }
+  return evaluator.eval(obj)[propName];
+}));
 builtins.set('set-prop!', (obj, prop, val) => obj[prop] = val);
 
 // Math
@@ -353,49 +364,6 @@ builtins.set('date', (year, month = 1, day = 1, hour = 0, minutes = 0, seconds =
 builtins.set('date-from-time', (time) => new Date(time));
 builtins.set('date-now', Date.now);
 builtins.set('date-utc', Date.UTC);
-builtins.set('date-time', new ArrpJsMethod('getTime'));
-builtins.set('date-year', new ArrpJsMethod('getFullYear'));
-builtins.set('date-month', new ArrpJsMethod('getMonth'));
-builtins.set('date-date', new ArrpJsMethod('getDate'));
-builtins.set('date-day', new ArrpJsMethod('getDay'));
-builtins.set('date-hours', new ArrpJsMethod('getHours'));
-builtins.set('date-minutes', new ArrpJsMethod('getMinutes'));
-builtins.set('date-seconds', new ArrpJsMethod('getSeconds'));
-builtins.set('date-milliseconds', new ArrpJsMethod('getMilliseconds'));
-builtins.set('date-timezone-offset', new ArrpJsMethod('getTimezoneOffset'));
-builtins.set('date-utc-year', new ArrpJsMethod('getUTCFullYear'));
-builtins.set('date-utc-month', new ArrpJsMethod('getUTCMonth'));
-builtins.set('date-utc-date', new ArrpJsMethod('getUTCDate'));
-builtins.set('date-utc-day', new ArrpJsMethod('getUTCDay'));
-builtins.set('date-utc-hours', new ArrpJsMethod('getUTCHours'));
-builtins.set('date-utc-minutes', new ArrpJsMethod('getUTCMinutes'));
-builtins.set('date-utc-seconds', new ArrpJsMethod('getUTCSeconds'));
-builtins.set('date-utc-milliseconds', new ArrpJsMethod('getUTCMilliseconds'));
-
-builtins.set('set-date-time!', new ArrpJsMethod('setTime'));
-builtins.set('set-date-year!', new ArrpJsMethod('setFullYear'));
-builtins.set('set-date-month!', new ArrpJsMethod('setMonth'));
-builtins.set('set-date-date!', new ArrpJsMethod('setDate'));
-builtins.set('set-date-hours!', new ArrpJsMethod('setHours'));
-builtins.set('set-date-minutes!', new ArrpJsMethod('getMinutes'));
-builtins.set('set-date-seconds!', new ArrpJsMethod('getSeconds'));
-builtins.set('set-date-millisecondes!', new ArrpJsMethod('getMilliseconds'));
-builtins.set('set-date-utc-year!', new ArrpJsMethod('setUTCFullYear'));
-builtins.set('set-date-utc-month!', new ArrpJsMethod('setUTCMonth'));
-builtins.set('set-date-utc-date!', new ArrpJsMethod('setUTCDate'));
-builtins.set('set-date-utc-hours!', new ArrpJsMethod('setUTCHours'));
-builtins.set('set-date-utc-minutes!', new ArrpJsMethod('setUTCMinutes'));
-builtins.set('set-date-utc-seconds!', new ArrpJsMethod('getUTCSeconds'));
-builtins.set('set-date-utc-millisecondes!', new ArrpJsMethod('getUTCMilliseconds'));
-
-builtins.set('to-date-string', new ArrpJsMethod('toDateString'));
-builtins.set('to-time-string', new ArrpJsMethod('toTimeString'));
-builtins.set('to-utc-string', new ArrpJsMethod('toUTCString'));
-builtins.set('to-date-iso-string', new ArrpJsMethod('toISOString'));
-builtins.set('to-date-json', new ArrpJsMethod('toJSON'));
-builtins.set('to-locale-datetime-string', new ArrpJsMethod('toLocaleString'));
-builtins.set('to-locale-date-string', new ArrpJsMethod('toLocaleDateString'));
-builtins.set('to-locale-time-string', new ArrpJsMethod('toLocaleTimeString'));
 
 // RegExp
 builtins.set('regex', (pattern, flags) => RegExp(pattern, flags));
