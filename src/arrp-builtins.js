@@ -236,6 +236,8 @@ builtins.set('.', new ArrpSpecial((evaluator, obj, prop) =>　{
     propName = prop;
   } else if (typeof prop === 'number') {
     propName = prop;
+  } else if (typeof prop === 'symbol') {
+    propName = prop;
   } else {
     return null;
   }
