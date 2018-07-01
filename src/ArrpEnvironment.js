@@ -111,6 +111,10 @@ class ArrpEnvironment {
   }
 
   exit() {
+      if (this.lexicalEnvsStack.length === 0) {
+        this.lexicalEnvs = [];
+        return;
+      }
       this.lexicalEnvs = this.lexicalEnvsStack.pop();
   }
 
