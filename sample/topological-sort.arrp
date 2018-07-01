@@ -35,6 +35,7 @@
     (if (= top -1) (return undefiend))
     (let ((top (nth dag top-ind)))
       (push! sorted (nth top 0))
-      (tsort (remove-edge (remove-at dag top-ind) (first top)) sorted))))
+      (set! dag (remove-edge (remove-at dag top-ind) (first top)))
+      (return (tsort dag sorted)))))
 
 (print-s (tsort +sample-dag+ (array)))
