@@ -25,6 +25,7 @@ class ArrpEnvironment {
   }
 
   __getKey(sym) {
+    if (typeof sym.identifier === 'symbol') return sym;
     if (sym.identifier.indexOf(':') === -1){
       return this.package + ':' + sym.identifier;
     } else {

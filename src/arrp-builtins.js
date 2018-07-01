@@ -1,7 +1,5 @@
 'use strict';
 const ArrpSymbol = require(__dirname + '/ArrpSymbol.js');
-const ArrpComma = require(__dirname + '/ArrpComma.js');
-const ArrpCommaAt = require(__dirname + '/ArrpCommaAt.js');
 const ArrpReader = require(__dirname + '/ArrpReader.js');
 
 const arrpPrint = require(__dirname + '/arrp-print.js');
@@ -11,104 +9,19 @@ const ArrpFunction = require(__dirname + '/ArrpFunction.js');
 const ArrpJsMethod = require(__dirname + '/ArrpJsMethod.js');
 const ArrpSpecial = require(__dirname + '/ArrpSpecial.js');
 const ArrpMultipleValue = require(__dirname + '/ArrpMultipleValue.js');
-const ArrpExpandedValues = require(__dirname + '/ArrpExpandedValues.js');
 
 const ReturnFromFunctionError = require(__dirname + '/ReturnFromFunctionError.js');
 
+const expandQuasiQuote = require(__dirname + '/expand-quasi-quote.js')
+
 const builtins = new Map();
+
+// Quote
 
 builtins.set('quote', new ArrpSpecial((evaluator, val) =>　{
   return val;
 }));
 
-let expandQuasiQuote = (sexp, evaluator) => {
-  if (sexp instanceof Array) {
-    if (sexp[0] instanceof ArrpSymbol && sexp[0].identifier === 'quasi-quote'){
-      evaluator.quasiQuoteCounter++;
-      let arr;
-      try {
-        arr = [sexp[0], expandQuasiQuote(sexp[1], evaluator)];
-      } catch (e) {
-        throw e;
-      } finally {
-        evaluator.quasiQuoteCounter--;
-      }
-      return arr;
-    }
-    let arr = [];
-    for (let elt of sexp) {
-      let expanded = expandQuasiQuote(elt, evaluator);
-      if (expanded instanceof ArrpExpandedValues) {
-        let values = expanded.values;
-        if (values instanceof Array) {
-          values.forEach((val) => {
-            arr.push(val)
-          });
-        } else {
-          arr.push(values);
-        }
-      } else {
-        arr.push(expanded);
-      }
-    }
-    return arr;
-  } else if (sexp instanceof ArrpComma) {
-    if (evaluator.quasiQuoteCounter > evaluator.commaCounter + 1) {
-      evaluator.commaCounter++;
-      let val;
-      try{
-        val = ArrpComma.make(expandQuasiQuote(sexp.sexp, evaluator));
-      } catch (e){
-        throw e;
-      } finally {
-        evaluator.commaCounter--;
-      }
-      return val;
-    } else if (evaluator.quasiQuoteCounter === evaluator.commaCounter + 1) {
-      evaluator.commaCounter++;
-      let val;
-      try{
-        val = evaluator.eval(sexp.sexp);
-      } catch (e){
-        throw e;
-      } finally {
-        evaluator.commaCounter--;
-      }
-      return val;
-    } else {
-      throw new Error('comma not inside quasi-quote');
-    }
-  } else if (sexp instanceof ArrpCommaAt) {
-    if (evaluator.quasiQuoteCounter > evaluator.commaCounter + 1) {
-      evaluator.commaCounter++;
-      let val;
-      try{
-        val = ArrpCommaAt.make(expandQuasiQuote(sexp.sexp, evaluator));
-      } catch (e){
-        throw e;
-      } finally {
-        evaluator.commaCounter--;
-      }
-      return val;
-    } else if (evaluator.quasiQuoteCounter === evaluator.commaCounter + 1) {
-      evaluator.commaCounter++;
-      let val;
-      try{
-        val = new ArrpExpandedValues(evaluator.eval(sexp.sexp));
-
-      } catch (e){
-        throw e;
-      } finally {
-        evaluator.commaCounter--;
-      }
-      return val;
-    } else {
-      throw new Error('comma not inside quasi-quote');
-    }
-  } else {
-    return sexp;
-  }
-};
 
 builtins.set('quasi-quote', new ArrpSpecial((evaluator, sexp) =>　{
   evaluator.quasiQuoteCounter++;
@@ -123,7 +36,7 @@ builtins.set('quasi-quote', new ArrpSpecial((evaluator, sexp) =>　{
   return ret;
 }));
 
-
+// if and cond
 
 builtins.set('if', new ArrpSpecial((evaluator, cond, thenSexp, elseSexp) =>　{
   return evaluator.eval(cond) !== false? evaluator.eval(thenSexp): evaluator.eval(elseSexp);
@@ -139,14 +52,7 @@ builtins.set('cond', new ArrpSpecial((evaluator, ...cond_bodys) =>　{
   return undefined;
 }));
 
-
-builtins.set('lambda', new ArrpSpecial((evaluator, paramSexp, ...body) =>　{
-  return new ArrpFunction(evaluator.env, paramSexp, body);
-}));
-
-builtins.set('defmacro!', new ArrpSpecial((evaluator, sym, params, ...body) =>　{
-  return evaluator.env.setGlobal(sym, new ArrpMacro(evaluator.env, params, body));
-}));
+// progn
 
 builtins.set('progn', new ArrpSpecial((evaluator, ...body) =>　{
     let tmp = null;
@@ -155,6 +61,21 @@ builtins.set('progn', new ArrpSpecial((evaluator, ...body) =>　{
     });
     return tmp;
 }));
+
+// lambda and let
+
+builtins.set('lambda', new ArrpSpecial((evaluator, paramSexp, ...body) =>　{
+  return new ArrpFunction(evaluator.env, paramSexp, body);
+}));
+
+builtins.set('let', new ArrpSpecial((evaluator, params, ...body) =>　{
+  let vars = params.map((sexp) => sexp instanceof ArrpSymbol? sexp: sexp[0]);
+  let vals = params.map((sexp) => sexp instanceof ArrpSymbol? null: evaluator.eval(sexp[1]));
+
+  return (new ArrpFunction(evaluator.env, vars, body)).call(evaluator, vals);
+}));
+
+// set and delete
 
 builtins.set('set!', new ArrpSpecial((evaluator, sym, val) =>　{
   if (sym instanceof ArrpSymbol) {
@@ -171,17 +92,23 @@ builtins.set('delete-g!', new ArrpSpecial((evaluator, sym) =>　{
   return evaluator.env.deleteGlobal(sym);
 }));
 
+// defun and defmacro
+
 builtins.set('defun!', new ArrpSpecial((evaluator, sym, paramSexp, ...body) =>　{
   return evaluator.env.setGlobal(sym, new ArrpFunction(evaluator.env, paramSexp, body));
 }));
 
-const randomNumeal = (digit) => {
-  let ret = '';
-  for (let c = 0; c < digit; c++){
-    ret += Math.floor(Math.random() * 10);
+builtins.set('defmacro!', new ArrpSpecial((evaluator, sym, params, ...body) =>　{
+  return evaluator.env.setGlobal(sym, new ArrpMacro(evaluator.env, params, body));
+}));
+
+builtins.set('gensym', new ArrpSpecial((evaluator) =>　{
+  let rand = '';
+  for (let c = 0; c < 6; c++){
+    rand += Math.floor(Math.random() * 10);
   }
-  return ret;
-}
+  return ArrpSymbol.make(Symbol(rand));
+}));
 
 // MultipleValue
 builtins.set('multiple-value-list', new ArrpSpecial((evaluator, sexp) =>　{
@@ -191,17 +118,6 @@ builtins.set('multiple-value-list', new ArrpSpecial((evaluator, sexp) =>　{
   } else {
     return [val];
   }
-}));
-
-builtins.set('gensym', new ArrpSpecial((evaluator) =>　{
-  return ArrpSymbol.make(Symbol(randomNumeal(6)));
-}));
-
-builtins.set('let', new ArrpSpecial((evaluator, params, ...body) =>　{
-  let vars = params.map((sexp) => sexp instanceof ArrpSymbol? sexp: sexp[0]);
-  let vals = params.map((sexp) => sexp instanceof ArrpSymbol? null: evaluator.eval(sexp[1]));
-
-  return (new ArrpFunction(evaluator.env, vars, body)).call(evaluator, vals);
 }));
 
 // Read
@@ -246,6 +162,16 @@ builtins.set('current-package', new ArrpSpecial((evaluator) =>　{
 builtins.set('jsm', new ArrpSpecial((evaluator, id) =>　{
   return new ArrpJsMethod(id);
 }));
+
+// as JS Function
+builtins.set('as-jsf', new ArrpSpecial((evaluator, func) =>　{
+  func = evaluator.eval(func);
+  if (func instanceof ArrpFunction) {
+    return (...args) => func.call(evaluator, args);
+  } else {
+    return null;
+  }
+}))
 
 // URI
 builtins.set('decode-uri', decodeURI)
@@ -367,13 +293,10 @@ builtins.set('date-utc', Date.UTC);
 
 // RegExp
 builtins.set('regex', (pattern, flags) => RegExp(pattern, flags));
-builtins.set('regex-last-index', (regex) => regex.lastIndex);
-builtins.set('regex-global?', (regex) => regex.global);
-builtins.set('regex-ignoreCase?', (regex) => regex.ignoreCase);
-builtins.set('regex-multiline?', (regex) => regex.multiline);
-builtins.set('regex-source', (regex) => regex.source);
-builtins.set('exec', new ArrpJsMethod('exec'));
-builtins.set('test', new ArrpJsMethod('test'));
+
+// String
+builtins.set('from-char-code', String.fromCharCode);
+builtins.set('from-code-point', String.fromCodePoint);
 
 // Array
 builtins.set('array', (...vals) =>　Array.from(vals));
@@ -389,6 +312,18 @@ builtins.set('pop!', (arr) => arr.pop());
 builtins.set('unshift!', (arr, ...vals) => arr.unshift.apply(arr, vals));
 builtins.set('shift!', (arr) => arr.shift());
 builtins.set('splice!', (arr, ...args) => arr.splice.apply(arr, args));
+builtins.set('concat', (obj, ...arrs) =>　obj.concat.apply(obj, arrs));
+builtins.set('length', (obj) =>　obj.length);
+builtins.set('slice', (obj, ...args) =>　obj.slice.apply(obj, args));
+builtins.set('copy-within!', (arr, ...args) => arr.copyWithin.apply(arr, args));
+builtins.set('reverse!', (arr) => arr.reverse());
+builtins.set('sort!', (arr) => arr.sort()); // TODO
+builtins.set('join', (arr, sep) =>　arr.join(sep));
+builtins.set('index-of', (obj, ...args) =>　obj.indexOf.apply(obj, args));
+builtins.set('last-index-of', (obj, ...args) =>　obj.lastIndexOf.apply(obj, args));
+
+// ArrayBuffer
+builtins.set('array-buffer', (length) => new ArrayBuffer(length));
 
 // Typed Array
 const typedArray = {
@@ -418,88 +353,6 @@ for (let name in typedArray){
   });
 }
 
-builtins.set('set-into', (arr, ...args) => arr.set.apply(arr, args));
-builtins.set('subarray', (arr, ...args) => arr.subarray.apply(arr, args));
-
-// for Array and TypedArray
-builtins.set('copy-within!', (arr, ...args) => arr.copyWithin.apply(arr, args));
-builtins.set('reverse!', (arr) => arr.reverse());
-builtins.set('sort!', (arr) => arr.sort()); // TODO
-builtins.set('join', (arr, sep) =>　arr.join(sep));
-
-// Iteration Method for Array and TypedArray
-const makeIterationMethod = (name) => {
-  return new ArrpSpecial((evaluator, arr, func, ...option) => {
-    arr = evaluator.eval(arr);
-    func = evaluator.eval(func);
-    if (option.length === 0) return arr[name]((...args) => func.call(evaluator, args));
-    option = evaluator.eval(option[0]);
-    return arr[name]((...args) => func.call(evaluator, args), option);
-  });
-};
-
-const makeIterationWithPredicateMethod = (name) => {
-  return new ArrpSpecial((evaluator, arr, func, ...option) => {
-    arr = evaluator.eval(arr);
-    func = evaluator.eval(func);
-    if (option.length === 0) return arr[name]((...args) => (func.call(evaluator, args) !== false));
-    option = evaluator.eval(option[0]);
-    return arr[name]((...args) => (func.call(evaluator, args) !== false), option);
-  });
-};
-
-const bindIterationMethod  = (arrpName, jsName) => builtins.set(arrpName, makeIterationMethod(jsName));
-const bindIterationWithPredicateMethod  = (arrpName, jsName) => builtins.set(arrpName, makeIterationWithPredicateMethod(jsName));
-
-bindIterationMethod('for-each', 'forEach');
-bindIterationMethod('map', 'map');
-bindIterationMethod('reduce', 'reduce');
-bindIterationMethod('reduce-right', 'reduceRight');
-bindIterationWithPredicateMethod('every', 'every');
-bindIterationWithPredicateMethod('some', 'some');
-bindIterationWithPredicateMethod('filter', 'filter');
-bindIterationWithPredicateMethod('find', 'find');
-bindIterationWithPredicateMethod('find-index', 'findIndex');
-
-// String TODO
-builtins.set('from-char-code', String.fromCharCode);
-builtins.set('from-code-point', String.fromCodePoint);
-builtins.set('char-at', (str, ind) => str.charAt(ind));
-builtins.set('char-code-at', (str, ind) => str.charCodeAt(ind));
-builtins.set('code-point-at', (str, pos) => str.codePointAt(pos));
-builtins.set('locale-compare', (str, ...args) => str.localeCompare.apply(str, args));
-builtins.set('str-normalize', (str, form) => str.normalize(form));
-builtins.set('starts-with', (str, ...args) => str.startsWith.apply(str, args));
-builtins.set('ends-with', (str, ...args) => str.endsWith.apply(str, args));
-builtins.set('match', (str, regexp) => str.match(regexp));
-builtins.set('replace', (str, ...args) => str.replace.apply(str, args)); // TODO
-builtins.set('search', (str, regexp) => str.search(regexp));
-builtins.set('split', (str, ...args) => str.split.apply(str, args));
-builtins.set('substr', (str, ...args) => str.substr.apply(str, args));
-builtins.set('substring', (str, ...args) => str.substring.apply(str, args));
-builtins.set('to-lower-case', (str) => str.toLowerCase());
-builtins.set('to-upper-case', (str) => str.toUpperCase());
-builtins.set('to-locale-lower-case', (str, ...args) => str.toLocaleLowerCase.apply(str, args));
-builtins.set('to-locale-upper-case', (str, ...args) => str.toLocaleUpperCase.apply(str, args));
-builtins.set('trim', (str) => str.trim());
-builtins.set('trim-right', (str) => str.trimRight());
-builtins.set('trim-left', (str) => str.trimLeft());
-builtins.set('pad-end', (str, ...args) => str.padEnd.apply(str, args));
-builtins.set('pad-start', (str, ...args) => str.padStart.apply(str, args));
-builtins.set('repeat', (str, count) => str.repeat(count));
-
-// ArrayBuffer
-builtins.set('array-buffer', (length) => new ArrayBuffer(length));
-
-// for String and Array,
-builtins.set('concat', (obj, ...arrs) =>　obj.concat.apply(obj, arrs));
-
-// for String and Array, Typed Array
-builtins.set('length', (obj) =>　obj.length);
-builtins.set('slice', (obj, ...args) =>　obj.slice.apply(obj, args));
-builtins.set('index-of', (obj, ...args) =>　obj.indexOf.apply(obj, args));
-builtins.set('last-index-of', (obj, ...args) =>　obj.lastIndexOf.apply(obj, args));
-
 // DataView
 builtins.set('data-view', (...args) => {
   if (args.length === 0) {
@@ -514,61 +367,22 @@ builtins.set('data-view', (...args) => {
   throw Error('invalid argumens');
 });
 
-builtins.set('get-int-8', (dataview, ...args) =>　dataview.getInt8.apply(dataview, args));
-builtins.set('get-uint-8', (dataview, ...args) =>　dataview.getUint8.apply(dataview, args));
-builtins.set('get-int-16', (dataview, ...args) =>　dataview.getInt16.apply(dataview, args));
-builtins.set('get-uint-16', (dataview, ...args) =>　dataview.getUint16.apply(dataview, args));
-builtins.set('get-int-32', (dataview, ...args) =>　dataview.getInt32.apply(dataview, args));
-builtins.set('get-uint-32', (dataview, ...args) =>　dataview.getUint32.apply(dataview, args));
-builtins.set('get-float-32', (dataview, ...args) =>　dataview.getFloat32.apply(dataview, args));
-builtins.set('get-float-64', (dataview, ...args) =>　dataview.getFloat64.apply(dataview, args));
-
-builtins.set('set-int-8!', (dataview, ...args) =>　dataview.setInt8.apply(dataview, args));
-builtins.set('set-uint-8!', (dataview, ...args) =>　dataview.setUint8.apply(dataview, args));
-builtins.set('set-int-16!', (dataview, ...args) =>　dataview.setInt16.apply(dataview, args));
-builtins.set('set-uint-16!', (dataview, ...args) =>　dataview.setUint16.apply(dataview, args));
-builtins.set('set-int-32!', (dataview, ...args) =>　dataview.setInt32.apply(dataview, args));
-builtins.set('set-uint-32!', (dataview, ...args) =>　dataview.setUint32.apply(dataview, args));
-builtins.set('set-float-32!', (dataview, ...args) =>　dataview.setFloat32.apply(dataview, args));
-builtins.set('set-float-64!', (dataview, ...args) =>　dataview.setFloat64.apply(dataview, args));
-
 // Map
 builtins.set('make-map', (arg) => new Map(arg));
-builtins.set('clear-map!', (map) => map.clear());
-builtins.set('delete-value!', (map, key) => map.delete(key));
-builtins.set('get-value', (map, key) => map.get(key));
-builtins.set('has-key', (map, key) => map.has(key));
-builtins.set('set-value!', (map, key, value) => map.set(key, value));
 
 // Set
 builtins.set('make-set', (arg) => new Set(arg));
-builtins.set('add-member!', (set, val) => set.add(val));
-builtins.set('clear-set!', (set) => set.clear());
-builtins.set('delete-member!', (set, value) => set.delete(value));
-builtins.set('has-member', (set, value) => set.has(value));
-
-// size of Map, Set
-builtins.set('size-of', (mapOrSet) => mapOrSet.size);
-
 
 // JSON
-builtins.set('json-parse', (str) =>　JSON.parse(str)); // TODO
-builtins.set('json-stringify', (val) =>　JSON.stringify(val)); //TODO
+builtins.set('json-parse', (str) =>　JSON.parse(str));
+builtins.set('json-stringify', (val) =>　JSON.stringify(val));
 
 // Intl
 builtins.set('intl-collator', (...args) => Intl.Collator.apply(null,args));
-builtins.set('intl-collator-supported-locales-of', (...args) => Intl.Collator.supportedLocalesOf.apply(null,args));
-builtins.set('compare', (col, ...args) => col.compare.apply(col, args));
 
 builtins.set('intl-datetime-format', (...args) => Intl.DateTimeFormat.apply(null,args));
-builtins.set('intl-datetime-format-supported-locales-of', (...args) => Intl.DateTimeFormat.supportedLocalesOf.apply(null,args));
-builtins.set('format-to-parts', (intldtf, ...args) => intldtf.formatToParts.apply(null,args));
 
 builtins.set('intl-number-format', (...args) => Intl.NumberFormat.apply(null,args));
-builtins.set('intl-number-format-supported-locales-of', (...args) => Intl.NumberFormat.supportedLocalesOf.apply(null,args));
-
-builtins.set('intl-format', (intldtnf, ...args) => intldtnf.format.apply(intldtnf, args)); // DateTime and Number
-builtins.set('resolved-options', (intl) => intl.resolvedOptions());
 
 // EXPORTS
 module.exports = builtins;
