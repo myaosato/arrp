@@ -60,7 +60,12 @@ class ArrpEvaluator{
               this.envsForTco = error.envs;
               continue;
             } else {
-              return this.eval(error.sexp);
+              this.env.enter(error.envs);
+              try {
+                return this.eval(error.sexp);
+              } finally {
+                this.env.exit();
+              }
             }
           }
           throw error;
