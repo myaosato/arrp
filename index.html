@@ -1,0 +1,16 @@
+<!doctype>
+<html>
+<head>
+  <meta charset="utf-8">
+</head>
+<body>
+  <script type="text/arrp">
+  (defun! fact (n)
+    (if (= n 1)
+        1
+        (* (fact (- n 1)) n)))
+  (fact 10)
+  </script>
+  <script src="arrp-browser.js"></script>
+</body>
+</html>
