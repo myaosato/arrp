@@ -103,10 +103,7 @@ class ArrpEvaluator{
       }
       return sexp;
     } catch (error) {
-      let len = this.env.lexicalEnvsStack.length;
-      for (let count = 0; count < len; count++) {
-        this.env.exit();
-      }
+      // TODO
       throw error;
     }
   }
