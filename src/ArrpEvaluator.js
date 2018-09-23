@@ -11,11 +11,11 @@ const ArrpMultipleValue = require(__dirname + '/ArrpMultipleValue.js');
 
 class ArrpEvaluator{
   constructor(env) {
-      this.env = env;
-      this.quasiQuoteCounter = 0;
-      this.commaCounter = 0;
-      this.envsForTco = null;
-      this.sexpForTco = null;
+    this.env = env;
+    this.quasiQuoteCounter = 0;
+    this.commaCounter = 0;
+    this.envsForTco = null;
+    this.sexpForTco = null;
   }
 
   __getSingleValue(val){
