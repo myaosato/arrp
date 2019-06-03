@@ -143,7 +143,7 @@ builtins.set('return', new ArrpSpecial((evaluator, sexp) =>　{
 builtins.set('change-package!', new ArrpSpecial((evaluator, pkg) =>　{
   let name = 'ARRP-USER';
   if (pkg instanceof ArrpSymbol) {
-    name = pkg.identifier;
+    name = pkg.name();
   } else if (typeof pkg === 'string') {
     name = pkg;
   } else {

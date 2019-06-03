@@ -43,7 +43,7 @@ class ArrpEnvironment {
   }
 
   hasLex(sym) {
-    let key = sym.identifier;
+    let key = this.__getKey(sym);
     let len = this.lexicalEnvs.length;
     for (let ind = len - 1; ind >= 0; ind--){
       if (this.lexicalEnvs[ind].has(key)) return true;
@@ -52,7 +52,7 @@ class ArrpEnvironment {
   }
 
   getLex(sym) {
-    let key = sym.identifier;
+    let key = this.__getKey(sym);
     let len = this.lexicalEnvs.length;
     for (let ind = len - 1; ind >= 0; ind--){
       if (this.lexicalEnvs[ind].has(key)) return this.lexicalEnvs[ind].get(key);
@@ -68,7 +68,7 @@ class ArrpEnvironment {
   }
 
   getBuiltin (sym) {
-    let key = sym.identifier;
+    let key = sym.name();
     if (this.__builtins.has(key)) return this.__builtins.get(key);
     return undefined;
   }
@@ -81,7 +81,7 @@ class ArrpEnvironment {
   }
 
   setLex(sym, val) {
-    let key = sym.identifier;
+    let key = this.__getKey(sym);
     let len = this.lexicalEnvs.length;
     for (let ind = len - 1; ind >= 0; ind--){
       if (this.lexicalEnvs[ind].has(key)) {

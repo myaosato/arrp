@@ -13,6 +13,15 @@ class ArrpSymbol {
     return this.toString();
   }
 
+  name() {
+    if (typeof this.identifier === 'symbol') return this.identifier.toString();
+    if (this.identifier.indexOf(':') === -1){
+      return this.identifier;
+    } else {
+      return this.identifier.slice(this.identifier.indexOf(':') + 1);
+    }
+  }
+
   eq(sym) {
     return this.identifier === sym.identifier;
   }

@@ -5,9 +5,16 @@ const ArrpComma = require(__dirname + '/ArrpComma.js');
 const ArrpCommaAt = require(__dirname + '/ArrpCommaAt.js');
 
 class ArrpReader{
-  constructor() {
+  constructor(getPkg) {
     this.__stack = [[]];
     this.__quote = [];
+    this.__getSymbolName = (name) => {
+      if (name.indexOf(':') === -1) {
+        return getPkg() + ':' + name;
+      } else {
+        return name;
+      }
+    }
   }
 
   __setQuote(str) {
@@ -60,7 +67,7 @@ class ArrpReader{
     // String
     if (str.match(/^"([^\\"]|\\0|\\b|\\f|\\n|\\r|\\t|\\v|\\'|\\"|\\\\|\\[0-3][0-7][0-7]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\u\{[0-9a-fA-F]{5}\})*"$/)) return eval(str);
     //
-    return new ArrpSymbol(str);
+    return new ArrpSymbol(this.__getSymbolName(str));
   }
 
   __makeToken(input, pos) {

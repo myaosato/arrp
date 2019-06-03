@@ -4,8 +4,8 @@ const ArrpReader = require(__dirname + '/src/ArrpReader.js');
 const arrpPrint = require(__dirname + '/src/arrp-print.js');
 class ARRP {
   constructor(...optionalBuiltins){
-    this.ar = new ArrpReader();
     this.ae = new ArrpEval(new ArrpEnvironment(optionalBuiltins));
+    this.ar = new ArrpReader(() => this.getPkg());
   }
 
   read(str){
@@ -29,7 +29,7 @@ class ARRP {
   }
 
   resetReader() {
-    this.ar = new ArrpReader();
+    this.ar = new ArrpReader(() => this.getPkg());
   }
 }
 
